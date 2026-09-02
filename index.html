@@ -1,0 +1,420 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Scent Simulation</title>
+<style>
+  :root{
+    --bg:#14113a;
+    --panel:#1e1a4d;
+    --line:#38316b;
+    --ink:#f4f2fb;
+    --ink-soft:#d7d1ec;
+    --ink-muted:#a89fcf;
+    --brass:#7b4fe0;
+    --sage:#2fd6c4;
+    --rust:#c1602f;
+  }
+  *{box-sizing:border-box;}
+  body{
+    margin:0;
+    background:var(--bg);
+    color:var(--ink);
+    font-family:-apple-system,BlinkMacSystemFont,"Segoe UI",Roboto,Helvetica,Arial,sans-serif;
+    padding:56px 0 72px;
+  }
+  h1,h2,h3,h4{
+    font-family:Georgia,"Iowan Old Style","Palatino Linotype","Book Antiqua",serif;
+    font-weight:600;
+    margin:0;
+  }
+  .wrap{max-width:980px;margin:0 auto;padding:0 24px;}
+
+  /* Hero */
+  .hero{display:flex;justify-content:space-between;align-items:flex-start;gap:48px;}
+  .brand{display:flex;align-items:center;gap:9px;margin-bottom:10px;}
+  .credit{font-size:0.85rem;color:var(--ink-muted);margin:0;}
+  .hero h1{font-size:2.5rem;line-height:1.15;color:var(--ink);}
+  .rule{width:60px;height:2px;background:var(--brass);border:none;margin:16px 0;}
+  .intro{font-size:1rem;line-height:1.65;color:var(--ink-soft);max-width:44ch;}
+  .stats{display:flex;gap:28px;flex-wrap:wrap;margin-top:26px;}
+  .stat-value{font-family:Georgia,serif;font-size:1.25rem;color:var(--ink);display:block;}
+  .stat-label{font-size:0.75rem;color:var(--ink-muted);}
+
+  /* Device */
+  .hero-visual{flex-shrink:0;display:flex;flex-direction:column;align-items:center;}
+  .device{background:var(--panel);border:1px solid var(--line);border-radius:8px;padding:20px 22px 18px;display:flex;flex-direction:column;align-items:center;}
+  .fan-ring{fill:none;stroke:var(--ink-muted);stroke-width:2;}
+  .fan-hub{fill:var(--brass);}
+  .blade{stroke:var(--ink-muted);stroke-width:3;stroke-linecap:round;}
+  .fan-blades{transform-box:fill-box;transform-origin:center;}
+  .fan-blades.spin{animation:fanspin 1.1s ease-out;}
+  @keyframes fanspin{from{transform:rotate(0deg);}to{transform:rotate(150deg);}}
+  .device-fan{margin-bottom:10px;}
+  .ports{display:grid;grid-template-columns:repeat(5,1fr);gap:10px 8px;}
+  .port{display:flex;flex-direction:column;align-items:center;gap:4px;background:none;border:none;cursor:pointer;padding:4px;}
+  .port-num{position:relative;width:38px;height:38px;border-radius:50%;border:2px solid var(--line);display:flex;align-items:center;justify-content:center;font-family:Georgia,serif;font-size:0.9rem;color:var(--ink-soft);transition:background .2s ease,border-color .2s ease,color .2s ease;}
+  .port-icon{width:20px;height:20px;}
+  .port-icon path,.port-icon polygon,.port-icon circle,.port-icon line{fill:none;stroke:currentColor;stroke-width:1.8;stroke-linecap:round;stroke-linejoin:round;}
+  .port-num::after{content:"";position:absolute;inset:-2px;border-radius:50%;border:2px solid var(--rust);opacity:0;}
+  .port:hover .port-num{border-color:var(--brass);color:var(--ink);}
+  .port.pinging .port-num::after{animation:ping .8s ease-out;}
+  @keyframes ping{0%{opacity:.8;transform:scale(1);}100%{opacity:0;transform:scale(1.8);}}
+  .port.active .port-num{background:var(--rust);border-color:var(--rust);color:var(--ink);}
+  .port-cap{font-size:0.66rem;color:var(--ink-muted);text-align:center;line-height:1.15;max-width:58px;}
+  .device-caption{font-size:0.8rem;color:var(--ink-muted);margin-top:14px;text-align:center;}
+
+  /* Now playing */
+  .now-playing{background:var(--panel);border:1px solid var(--line);border-radius:4px;padding:20px 22px;margin-top:32px;}
+  .np-hint{font-size:0.92rem;color:var(--ink-muted);margin:0;}
+  .np-port{font-size:0.8rem;color:var(--rust);margin:0 0 3px;}
+  .now-playing h3{font-size:1.2rem;color:var(--ink);margin-bottom:6px;}
+  .np-desc{font-size:0.92rem;line-height:1.55;color:var(--ink-soft);margin:0 0 12px;}
+  .np-cmd{display:inline-block;font-family:"SF Mono",Consolas,"Courier New",monospace;font-size:0.82rem;background:var(--bg);border:1px solid var(--line);color:var(--brass);padding:6px 10px;border-radius:3px;}
+
+  /* Sections */
+  section.block{margin-top:68px;}
+  section.block h2{font-size:1.5rem;color:var(--ink);}
+  .section-head{display:flex;align-items:center;gap:10px;}
+  .section-icon{flex-shrink:0;}
+  .section-icon .icon-shape{stroke-width:2.2;}
+  .section-icon.sage .icon-shape{stroke:var(--sage);}
+  .section-icon.brass .icon-shape{stroke:var(--brass);}
+  .section-intro{font-size:0.98rem;line-height:1.6;color:var(--ink-soft);max-width:60ch;margin-top:10px;}
+
+  /* Cards (wellness) */
+  .grid{display:grid;grid-template-columns:repeat(auto-fit,minmax(260px,1fr));gap:16px;margin-top:24px;}
+  .card{position:relative;background:var(--panel);border:1px solid var(--line);border-radius:4px;padding:16px 16px 16px 22px;cursor:pointer;overflow:hidden;transition:border-color .2s ease;}
+  .card::before{content:"";position:absolute;left:0;top:0;bottom:0;width:4px;background:var(--sage);}
+  .card:hover,.card:focus-visible{border-color:var(--sage);}
+  .card-top{display:flex;align-items:flex-start;gap:12px;}
+  .icon{width:26px;height:26px;flex-shrink:0;margin-top:2px;}
+  .icon-shape{fill:none;stroke:var(--sage);stroke-width:2.5;stroke-linecap:round;stroke-linejoin:round;}
+  .card-title-group{flex:1;}
+  .card h3{font-size:1.05rem;color:var(--ink);margin-bottom:3px;}
+  .teaser{font-size:0.85rem;color:var(--ink-muted);margin:0;}
+  .toggle{font-size:1.2rem;color:var(--ink-muted);line-height:1;flex-shrink:0;width:16px;text-align:center;}
+  .detail{max-height:0;overflow:hidden;opacity:0;transition:max-height .3s ease,opacity .3s ease,margin-top .3s ease;margin-top:0;padding-left:38px;}
+  .card.expanded .detail{max-height:160px;opacity:1;margin-top:10px;}
+  .detail p{font-size:0.9rem;line-height:1.55;color:var(--ink-soft);margin:0;}
+
+  /* Process steps */
+  .steps{display:flex;gap:24px;flex-wrap:wrap;margin-top:28px;}
+  .step{flex:1;min-width:200px;border-top:2px solid var(--brass);padding-top:12px;}
+  .step-num{font-family:Georgia,serif;font-size:0.85rem;color:var(--brass);margin:0;}
+  .step h4{font-size:1.02rem;color:var(--ink);margin:4px 0 6px;}
+  .step p{font-size:0.87rem;line-height:1.55;color:var(--ink-soft);margin:0;}
+  .format-line{margin-top:18px;font-family:"SF Mono",Consolas,"Courier New",monospace;font-size:0.85rem;background:var(--panel);border:1px solid var(--line);color:var(--brass);padding:10px 14px;border-radius:3px;display:inline-block;}
+  .format-note{font-size:0.82rem;color:var(--ink-muted);margin-top:8px;}
+  .code-heading{font-size:1.15rem;color:var(--ink);margin-top:28px;margin-bottom:2px;}
+  .code-block{margin-top:14px;background:var(--bg);border:1px solid var(--line);border-radius:4px;padding:16px 18px;overflow-x:auto;}
+  .code-block code{font-family:"SF Mono",Consolas,"Courier New",monospace;font-size:0.82rem;line-height:1.65;color:var(--ink-soft);white-space:pre;}
+  .code-note{font-size:0.82rem;color:var(--ink-muted);margin-top:10px;}
+
+  footer{margin-top:72px;border-top:1px solid var(--line);padding-top:20px;}
+  footer p{font-size:0.85rem;color:var(--ink-muted);margin:0 0 6px;}
+
+  :focus-visible{outline:2px solid var(--brass);outline-offset:2px;}
+
+  @media(max-width:720px){
+    .hero{flex-direction:column;align-items:flex-start;gap:28px;}
+    .hero-visual{align-self:center;}
+    .hero h1{font-size:1.95rem;}
+    .steps{flex-direction:column;}
+  }
+  @media(prefers-reduced-motion:reduce){
+    *{animation-duration:.01ms!important;transition-duration:.01ms!important;}
+  }
+</style>
+</head>
+<body>
+<div class="wrap">
+  <header class="hero">
+    <div class="hero-text">
+      <div class="brand">
+        <svg class="brand-mark" viewBox="0 0 40 40" width="26" height="26" aria-hidden="true">
+          <defs>
+            <linearGradient id="brandGrad" x1="0%" y1="0%" x2="100%" y2="100%">
+              <stop offset="0%" stop-color="#7b4fe0"></stop>
+              <stop offset="100%" stop-color="#2fd6c4"></stop>
+            </linearGradient>
+          </defs>
+          <circle cx="20" cy="20" r="16" fill="none" stroke="url(#brandGrad)" stroke-width="2.5"></circle>
+          <circle cx="20" cy="20" r="4.5" fill="url(#brandGrad)"></circle>
+        </svg>
+        <p class="credit">Immersive Experiences Lab</p>
+      </div>
+      <h1>Scent Simulation</h1>
+      <hr class="rule">
+      <p class="intro">The lab's Olorama Professional 10-Scents Generator holds ten cartridges and releases any of them on cue — from a calming aromatherapy note to the acrid smell of a structure fire — synced to whatever is happening in the simulation.</p>
+      <div class="stats">
+        <div><span class="stat-value">10</span><span class="stat-label">cartridges</span></div>
+        <div><span class="stat-value">30 m²</span><span class="stat-label">coverage</span></div>
+        <div><span class="stat-value">~90</span><span class="stat-label">sprays per cartridge</span></div>
+        <div><span class="stat-value">UDP</span><span class="stat-label">Ethernet &amp; Wi-Fi control</span></div>
+      </div>
+    </div>
+    <div class="hero-visual">
+      <div class="device">
+        <svg class="device-fan" viewBox="0 0 80 80" width="118" height="118">
+          <circle class="fan-ring" cx="40" cy="40" r="34"></circle>
+          <g class="fan-blades" id="fanBlades">
+            <line class="blade" x1="40" y1="10" x2="40" y2="26"></line>
+            <line class="blade" x1="40" y1="10" x2="40" y2="26" transform="rotate(45 40 40)"></line>
+            <line class="blade" x1="40" y1="10" x2="40" y2="26" transform="rotate(90 40 40)"></line>
+            <line class="blade" x1="40" y1="10" x2="40" y2="26" transform="rotate(135 40 40)"></line>
+            <line class="blade" x1="40" y1="10" x2="40" y2="26" transform="rotate(180 40 40)"></line>
+            <line class="blade" x1="40" y1="10" x2="40" y2="26" transform="rotate(225 40 40)"></line>
+            <line class="blade" x1="40" y1="10" x2="40" y2="26" transform="rotate(270 40 40)"></line>
+            <line class="blade" x1="40" y1="10" x2="40" y2="26" transform="rotate(315 40 40)"></line>
+          </g>
+          <circle class="fan-hub" cx="40" cy="40" r="5"></circle>
+        </svg>
+        <div class="ports" id="ports">
+          <button class="port" data-port="1" aria-pressed="false" aria-label="Port 1: Blood"><span class="port-num"><svg class="port-icon" viewBox="0 0 24 24"><path d="M12 4 L17 14 A5 5 0 1 1 7 14 Z"></path></svg></span><span class="port-cap">Blood</span></button>
+          <button class="port" data-port="2" aria-pressed="false" aria-label="Port 2: Fire and Explosions"><span class="port-num"><svg class="port-icon" viewBox="0 0 24 24"><path d="M12 4 C15 9 17 12 17 16 C17 19.5 14.8 21.5 12 21.5 C9.2 21.5 7 19.5 7 16 C7 12 9 9 12 4Z"></path></svg></span><span class="port-cap">Fire</span></button>
+          <button class="port" data-port="3" aria-pressed="false" aria-label="Port 3: Gunfire and Gunpowder"><span class="port-num"><svg class="port-icon" viewBox="0 0 24 24"><polygon points="12,3 14.5,12 12,21 9.5,12"></polygon><polygon points="3,12 12,9.5 21,12 12,14.5"></polygon></svg></span><span class="port-cap">Gunfire</span></button>
+          <button class="port" data-port="4" aria-pressed="false" aria-label="Port 4: Burnt Rubber"><span class="port-num"><svg class="port-icon" viewBox="0 0 24 24"><circle cx="12" cy="12" r="6.5"></circle><line x1="12" y1="3" x2="12" y2="6"></line><line x1="12" y1="18" x2="12" y2="21"></line><line x1="3" y1="12" x2="6" y2="12"></line><line x1="18" y1="12" x2="21" y2="12"></line></svg></span><span class="port-cap">Rubber</span></button>
+          <button class="port" data-port="5" aria-pressed="false" aria-label="Port 5: Burnt Plastic"><span class="port-num"><svg class="port-icon" viewBox="0 0 24 24"><polygon points="12,2.5 19,7 19,17 12,21.5 5,17 5,7"></polygon></svg></span><span class="port-cap">Plastic</span></button>
+          <button class="port" data-port="6" aria-pressed="false" aria-label="Port 6: Burnt Car Oil"><span class="port-num"><svg class="port-icon" viewBox="0 0 24 24"><path d="M7 5 H17 V19 H7 Z"></path><line x1="7" y1="9.5" x2="17" y2="9.5"></line><line x1="7" y1="14.5" x2="17" y2="14.5"></line></svg></span><span class="port-cap">Car Oil</span></button>
+          <button class="port" data-port="7" aria-pressed="false" aria-label="Port 7: Gasoline"><span class="port-num"><svg class="port-icon" viewBox="0 0 24 24"><path d="M5 21 V6 A2 2 0 0 1 7 4 H11 A2 2 0 0 1 13 6 V21"></path><line x1="4" y1="21" x2="13" y2="21"></line><path d="M13 9 H15 A2 2 0 0 1 17 11 V16 A1.5 1.5 0 0 0 20 16 V10 L18 8"></path></svg></span><span class="port-cap">Gasoline</span></button>
+          <button class="port" data-port="8" aria-pressed="false" aria-label="Port 8: Diesel"><span class="port-num"><svg class="port-icon" viewBox="0 0 24 24"><path d="M7 21 V10 H17 V21 Z"></path><path d="M10 10 V6 H14 V10"></path><line x1="9.5" y1="14" x2="9.5" y2="18"></line><line x1="14.5" y1="14" x2="14.5" y2="18"></line></svg></span><span class="port-cap">Diesel</span></button>
+          <button class="port" data-port="9" aria-pressed="false" aria-label="Port 9: Aviation Gas"><span class="port-num"><svg class="port-icon" viewBox="0 0 24 24"><polygon points="3,19 21,12 3,5 8.5,12"></polygon></svg></span><span class="port-cap">Aviation</span></button>
+          <button class="port" data-port="10" aria-pressed="false" aria-label="Port 10: Volcano"><span class="port-num"><svg class="port-icon" viewBox="0 0 24 24"><polygon points="3,20 12,5 21,20"></polygon><path d="M10 4 Q12 1 14 4"></path></svg></span><span class="port-cap">Volcano</span></button>
+        </div>
+      </div>
+      <p class="device-caption">Olorama Professional 10-Scents Generator<br>current kit: Emergency &amp; Tactical Training</p>
+    </div>
+  </header>
+
+  <div class="now-playing" id="nowPlaying">
+    <p class="np-hint">Click a port above to preview a scent and see the command that triggers it on the real device.</p>
+  </div>
+
+  <section class="block">
+    <div class="section-head">
+      <svg class="section-icon sage" viewBox="0 0 24 24" width="22" height="22" aria-hidden="true">
+        <path class="icon-shape" d="M4 20 C4 10 13 4 20 4 C20 14 13 20 4 20Z"></path>
+        <line class="icon-shape" x1="5" y1="19" x2="18" y2="6"></line>
+      </svg>
+      <h2>Also Loaded: A Wellness Kit</h2>
+    </div>
+    <p class="section-intro">The same generator takes a second kit of ten cartridges. Swap the tactical set for a calmer one and the hardware runs sessions like these instead.</p>
+    <div class="grid">
+      <article class="card" tabindex="0" role="button" aria-expanded="false">
+        <div class="card-top">
+          <svg class="icon" viewBox="0 0 48 48" aria-hidden="true">
+            <path class="icon-shape" d="M16 32 Q24 24 16 16"></path>
+            <path class="icon-shape" d="M22 38 Q36 24 22 10"></path>
+          </svg>
+          <div class="card-title-group">
+            <h3>Exposure Therapy</h3>
+            <p class="teaser">Controlled scent cues in clinician-guided sessions</p>
+          </div>
+          <span class="toggle">+</span>
+        </div>
+        <div class="detail">
+          <p>Introduces scent cues alongside VR scenes so a clinician can guide gradual exposure therapy for PTSD or specific phobias.</p>
+        </div>
+      </article>
+
+      <article class="card" tabindex="0" role="button" aria-expanded="false">
+        <div class="card-top">
+          <svg class="icon" viewBox="0 0 48 48" aria-hidden="true">
+            <path class="icon-shape" d="M18 8 C18 8 16 20 16 26 C16 33 20 37 24 37 C28 37 30 34 30 34"></path>
+          </svg>
+          <div class="card-title-group">
+            <h3>Olfactory Rehabilitation</h3>
+            <p class="teaser">Smell-training for patients relearning scent</p>
+          </div>
+          <span class="toggle">+</span>
+        </div>
+        <div class="detail">
+          <p>Runs structured smell-training routines that help patients recover a diminished sense of smell after illness or injury.</p>
+        </div>
+      </article>
+
+      <article class="card" tabindex="0" role="button" aria-expanded="false">
+        <div class="card-top">
+          <svg class="icon" viewBox="0 0 48 48" aria-hidden="true">
+            <path class="icon-shape" d="M10 38 C10 20 26 8 40 8 C40 26 26 40 10 38Z"></path>
+            <line class="icon-shape" x1="12" y1="36" x2="36" y2="10"></line>
+          </svg>
+          <div class="card-title-group">
+            <h3>Relaxation &amp; Aromatherapy</h3>
+            <p class="teaser">Calming scents paired with a quiet scene</p>
+          </div>
+          <span class="toggle">+</span>
+        </div>
+        <div class="detail">
+          <p>Pairs lavender, sea-breeze, or pine with a calm visual scene to support stress reduction and mindfulness sessions.</p>
+        </div>
+      </article>
+
+      <article class="card" tabindex="0" role="button" aria-expanded="false">
+        <div class="card-top">
+          <svg class="icon" viewBox="0 0 48 48" aria-hidden="true">
+            <path class="icon-shape" d="M24 40 C10 30 6 20 12 13 C16 8 22 9 24 15 C26 9 32 8 36 13 C42 20 38 30 24 40Z"></path>
+            <polyline class="icon-shape" points="12,24 18,24 21,16 27,32 30,24 36,24"></polyline>
+          </svg>
+          <div class="card-title-group">
+            <h3>Pain Distraction Therapy</h3>
+            <p class="teaser">Pleasant scent as distraction during procedures</p>
+          </div>
+          <span class="toggle">+</span>
+        </div>
+        <div class="detail">
+          <p>Releases a pleasant ambient scent during a VR distraction session to ease discomfort during wound care or infusions.</p>
+        </div>
+      </article>
+
+      <article class="card" tabindex="0" role="button" aria-expanded="false">
+        <div class="card-top">
+          <svg class="icon" viewBox="0 0 48 48" aria-hidden="true">
+            <circle class="icon-shape" cx="24" cy="24" r="16"></circle>
+            <line class="icon-shape" x1="24" y1="24" x2="24" y2="14"></line>
+            <line class="icon-shape" x1="24" y1="24" x2="31" y2="28"></line>
+          </svg>
+          <div class="card-title-group">
+            <h3>Memory &amp; Reminiscence Care</h3>
+            <p class="teaser">Familiar scents for reminiscence sessions</p>
+          </div>
+          <span class="toggle">+</span>
+        </div>
+        <div class="detail">
+          <p>Uses a personally familiar scent to support reminiscence sessions for older adults and people living with dementia.</p>
+        </div>
+      </article>
+    </div>
+  </section>
+
+  <section class="block">
+    <div class="section-head">
+      <svg class="section-icon brass" viewBox="0 0 24 24" width="22" height="22" aria-hidden="true">
+        <polyline class="icon-shape" points="4,6 10,12 4,18"></polyline>
+        <line class="icon-shape" x1="12" y1="18" x2="20" y2="18"></line>
+      </svg>
+      <h2>How a Command Reaches the Device</h2>
+    </div>
+    <p class="section-intro">The generator listens for a short text command over the network. Unity, Unreal, the control app, and the C++/Java samples in the manual all send the same format.</p>
+    <div class="steps">
+      <div class="step">
+        <p class="step-num">1</p>
+        <h4>Something happens in the scene</h4>
+        <p>An event in the VR or AR experience — entering a room, a fire breaking out — decides it's time for a scent.</p>
+      </div>
+      <div class="step">
+        <p class="step-num">2</p>
+        <h4>A command goes out</h4>
+        <p>A UDP message names the port, the intensity, and how long the fan should run for.</p>
+      </div>
+      <div class="step">
+        <p class="step-num">3</p>
+        <h4>The cartridge sprays</h4>
+        <p>The matched cartridge releases into the airflow, and the fan clears whatever scent was there before.</p>
+      </div>
+      <div class="step">
+        <p class="step-num">4</p>
+        <h4>It reaches the room</h4>
+        <p>Across the generator's 30 m² coverage, the scent lands in sync with the sound and visuals.</p>
+      </div>
+    </div>
+    <code class="format-line">OUT,[port 01–10],[intensity 0100–0500],1,[fan time 1000–9000 ms],1000</code>
+    <p class="format-note">The two fixed fields in the middle and at the end are internal — the manual notes they shouldn't be changed.</p>
+
+    <h3 class="code-heading">Triggering It From Node.js</h3>
+    <p class="section-intro">The manual only shows C++ and Java samples. Here's the same UDP message in JavaScript, using Node's built-in dgram module. It runs as a small standalone script, not inside a browser — browsers can't open raw UDP sockets, which is also why the ports above only simulate the command rather than firing it.</p>
+    <div class="code-block"><code>const dgram = require('dgram');
+const socket = dgram.createSocket('udp4');
+
+const DEVICE_IP = '192.168.0.40';   // the generator's address on your network
+const DEVICE_PORT = 8000;           // confirm against your PacketSender export
+
+function activateScent(port, intensity = 100, fanMs = 2000) {
+  const message = [
+    'OUT',
+    String(port).padStart(2, '0'),
+    String(intensity).padStart(4, '0'),
+    '1',
+    String(fanMs).padStart(5, '0'),
+    '1000'
+  ].join(',');
+
+  socket.send(message, DEVICE_PORT, DEVICE_IP, function (err) {
+    if (err) console.error('Send failed:', err);
+    else console.log('Sent:', message);
+  });
+}
+
+activateScent(2, 150, 3000); // Fire and Explosions, medium intensity, 3s</code></div>
+    <p class="code-note">The UDP port isn't printed as plain text in the guide — pull it from the PacketSender export file the manual links to, or confirm it with Olorama support.</p>
+  </section>
+
+  <footer>
+    <p>A concept showcase from the Immersive Experiences Lab, built around the Olorama Professional 10-Scents Generator.</p>
+    <p>Cartridges contain flammable aromatic compounds — store and handle per the manufacturer's guidance.</p>
+  </footer>
+</div>
+
+<script>
+  var portData = {
+    1:{name:"Blood", desc:"Recreates the metallic scent of blood so combat-medic and mass-casualty training feels closer to the real thing."},
+    2:{name:"Fire & Explosions", desc:"Combines smoke and combustion notes to sharpen recognition speed in firefighting and explosive-ordnance training."},
+    3:{name:"Gunfire & Gunpowder", desc:"Reproduces the acrid smell of spent gunpowder for tactical, security, and range-safety training."},
+    4:{name:"Burnt Rubber", desc:"Simulates scorched rubber for vehicle-fire and traffic-collision response training."},
+    5:{name:"Burnt Plastic", desc:"Recreates the sharp smell of melting plastic so trainees learn to recognize electrical and industrial fires by scent."},
+    6:{name:"Burnt Car Oil", desc:"Reproduces overheated motor oil for vehicle-fire and mechanical-failure response scenarios."},
+    7:{name:"Gasoline", desc:"Simulates a gasoline spill so responders can practise identifying fuel hazards by smell before they see them."},
+    8:{name:"Diesel", desc:"Recreates diesel fuel for transportation-accident and industrial-site training."},
+    9:{name:"Aviation Gas", desc:"Simulates aviation fuel for airport emergency-response and aircraft-incident training."},
+    10:{name:"Volcano", desc:"Reproduces sulfurous volcanic gas for geoscience education and natural-disaster response training."}
+  };
+
+  var ports = document.querySelectorAll('.port');
+  var nowPlaying = document.getElementById('nowPlaying');
+  var fanBlades = document.getElementById('fanBlades');
+
+  ports.forEach(function(port){
+    port.addEventListener('click', function(){
+      var n = port.getAttribute('data-port');
+      ports.forEach(function(p){
+        p.classList.remove('active','pinging');
+        p.setAttribute('aria-pressed','false');
+      });
+      port.classList.add('active');
+      port.setAttribute('aria-pressed','true');
+      void port.offsetWidth;
+      port.classList.add('pinging');
+
+      fanBlades.classList.remove('spin');
+      void fanBlades.offsetWidth;
+      fanBlades.classList.add('spin');
+
+      var data = portData[n];
+      var padded = n.length === 1 ? '0' + n : n;
+      nowPlaying.innerHTML =
+        '<p class="np-port">Port ' + n + '</p>' +
+        '<h3>' + data.name + '</h3>' +
+        '<p class="np-desc">' + data.desc + '</p>' +
+        '<code class="np-cmd">OUT,' + padded + ',0100,1,02000,1000</code>';
+    });
+  });
+
+  document.querySelectorAll('.card').forEach(function(card){
+    function toggleCard(){
+      var expanded = card.classList.toggle('expanded');
+      card.setAttribute('aria-expanded', expanded);
+      card.querySelector('.toggle').textContent = expanded ? '−' : '+';
+    }
+    card.addEventListener('click', toggleCard);
+    card.addEventListener('keydown', function(e){
+      if(e.key === 'Enter' || e.key === ' '){
+        e.preventDefault();
+        toggleCard();
+      }
+    });
+  });
+</script>
+</body>
+</html>
