@@ -47,7 +47,7 @@ class ScentDeviceSimulator extends EventEmitter {
 module.exports = { ScentDeviceSimulator };
 
 if (require.main === module) {
-  const requestedPort = Number(process.argv[2] || process.env.OLORAMA_PORT || 8000);
+  const requestedPort = Number(process.argv[2] || process.env.OLORAMA_PORT || 5010);
   const sim = new ScentDeviceSimulator();
 
   sim.on('scent', ({ port, name, intensity, fanMs, raw, rinfo }) => {

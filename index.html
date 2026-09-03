@@ -527,7 +527,7 @@ const socket = dgram.createSocket('udp4');
 socket.send(encodeCommand({ port: 2, intensity: 150, fanMs: 3000 }), DEVICE_PORT, DEVICE_IP);</code></div>
     <p class="code-note">Fire one port: <code>node tools/activate-scent.js 2 --intensity 150 --fan-ms 3000</code></p>
     <p class="code-note">Fire a whole scenario: <code>node tools/activate-scent.js --scenario vehicle-collision</code></p>
-    <p class="code-note">The UDP port isn't printed as plain text in the guide — pull it from the PacketSender export file the manual links to, or confirm it with Olorama support. Set it with <code>--host</code>/<code>--port</code> or the <code>OLORAMA_HOST</code>/<code>OLORAMA_PORT</code> env vars.</p>
+    <p class="code-note">The user guide PDF doesn't print the UDP port, but Olorama's separate C++ integration guide does: <strong>5010</strong> by default, which is what these tools use. If your unit differs, override it with <code>--host</code>/<code>--port</code> or the <code>OLORAMA_HOST</code>/<code>OLORAMA_PORT</code> env vars.</p>
     <p class="code-note">No physical generator on hand? <code>npm run simulate</code> starts <code>tools/scent-device-simulator.js</code>, a local UDP listener that decodes the same command and prints which cartridge and intensity it received. <code>npm test</code> runs the automated suite, which sends real UDP packets to that simulator and checks all 10 ports — and every scenario — decode correctly.</p>
   </section>
 

@@ -42,16 +42,17 @@ node tools/activate-scent.js --scenario <id> [--stagger-ms 300] [...same options
 node tools/activate-scent.js --list-scenarios
 ```
 
-`--host`/`--port` default to `192.168.0.40:8000` — the manual doesn't print
-the real UDP port; pull it from the PacketSender export file it links to, or
-confirm it with Olorama support. Override the defaults with `OLORAMA_HOST` /
-`OLORAMA_PORT`, or per-command with the flags.
+`--host`/`--port` default to `192.168.0.40:5010`. The user guide PDF doesn't
+print the UDP port, but Olorama's C++ integration guide does (mirrored at
+`reference/olorama_c_integration_guide.md`) — 5010 is its documented default.
+If your unit reports a different one (PacketSender export, or Olorama
+support), override it with `OLORAMA_HOST`/`OLORAMA_PORT` or the flags.
 
 Try it against the simulator instead of real hardware:
 
 ```
 npm run simulate                                                    # terminal 1
-node tools/activate-scent.js 2 --host 127.0.0.1 --port 8000 --intensity 150 --fan-ms 3000   # terminal 2
+node tools/activate-scent.js 2 --host 127.0.0.1 --port 5010 --intensity 150 --fan-ms 3000   # terminal 2
 ```
 
 ## Tests

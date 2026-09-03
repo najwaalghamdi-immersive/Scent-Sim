@@ -12,8 +12,11 @@
 //   node tools/activate-scent.js --list-scenarios
 //
 // OLORAMA_HOST / OLORAMA_PORT env vars set the defaults for --host / --port.
-// The UDP port isn't printed in the manual — confirm it from your device's
-// PacketSender export (see the user guide, section 3.2) or Olorama support.
+// 5010 is the default UDP port per Olorama's C++ integration guide
+// (https://olorama.com/downloads/c_integration_guide.html, mirrored at
+// reference/olorama_c_integration_guide.md) — the user guide PDF itself
+// doesn't print it. Override it with --port / $OLORAMA_PORT if your unit's
+// PacketSender export or Olorama support gives you a different value.
 
 const dgram = require('dgram');
 const { encodeCommand, PORT_COUNT, INTENSITY_MIN, INTENSITY_MAX, FAN_MS_MIN, FAN_MS_MAX } = require('./protocol');
@@ -21,7 +24,7 @@ const SCENT_NAMES = require('./scent-catalog');
 const SCENARIOS = require('./scenario-catalog');
 
 const DEFAULT_HOST = process.env.OLORAMA_HOST || '192.168.0.40';
-const DEFAULT_UDP_PORT = Number(process.env.OLORAMA_PORT || 8000);
+const DEFAULT_UDP_PORT = Number(process.env.OLORAMA_PORT || 5010);
 
 function parseArgs(argv) {
   const args = {
