@@ -8,33 +8,39 @@
 <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
 <link href="https://fonts.googleapis.com/css2?family=Big+Shoulders+Display:wght@700;800&family=IBM+Plex+Mono:wght@400;500;600&family=IBM+Plex+Sans:wght@400;500;600;700&display=swap" rel="stylesheet">
 <style>
+  /* ============================================================
+     --brand is a PLACEHOLDER. Swap it for the real DGA brand hex
+     value(s) — everything else (library tags, semantic states) is
+     independent of it, so this is the only line that needs to change.
+     ============================================================ */
   :root{
-    color-scheme: dark;
-    --graphite:#17181c;
-    --panel:#1f2126;
-    --panel-raised:#25272d;
-    --line:#36383f;
-    --line-soft:#2a2c32;
-    --paper:#efece3;
-    --paper-soft:#c7c3b7;
-    --paper-muted:#8d8a80;
-    --amber:#e2892c;
-    --amber-soft:#f0ab5f;
-    --amber-dim:#7a5326;
-    --sage:#5fae93;
-    --sage-soft:#8ec9b3;
-    --sage-dim:#33473f;
-    --danger:#c4574a;
+    color-scheme: light;
+    --bg:#ffffff;
+    --panel:#f7f7f5;
+    --panel-raised:#f1f0ec;
+    --line:#e2e0d9;
+    --ink:#1c1c1a;
+    --ink-soft:#4a483f;
+    --ink-muted:#847f72;
+
+    --brand:#2f6f8f;        /* PLACEHOLDER — replace with real DGA color */
+    --brand-soft:#5c93ac;
+    --brand-dim:#e6eef1;
+
+    --danger:#c4453a;
+
+    /* Library colors — used as tags, port glows, and atmosphere tints. */
+    --lib-nature:#3f7a52;   --lib-nature-tint:#eaf3ec;
+    --lib-food:#c9793a;     --lib-food-tint:#faf0e6;
+    --lib-ambiance:#7d5fa6; --lib-ambiance-tint:#f2eef8;
+    --lib-action:#c4453a;   --lib-action-tint:#fbeceb;
   }
   *{box-sizing:border-box;}
   html{-webkit-text-size-adjust:100%;}
   body{
     margin:0;
-    background:
-      radial-gradient(60ch 60ch at 8% -6%, color-mix(in srgb, var(--amber) 10%, transparent), transparent 60%),
-      radial-gradient(70ch 70ch at 96% 30%, color-mix(in srgb, var(--sage) 9%, transparent), transparent 60%),
-      var(--graphite);
-    color:var(--paper);
+    background:var(--bg);
+    color:var(--ink);
     font-family:'IBM Plex Sans',-apple-system,BlinkMacSystemFont,"Segoe UI",Helvetica,Arial,sans-serif;
     padding:60px 0 80px;
   }
@@ -46,74 +52,77 @@
     margin:0;
   }
   code, .mono{font-family:'IBM Plex Mono',"SF Mono",Consolas,monospace;}
-  .wrap{max-width:1000px;margin:0 auto;padding:0 24px;}
-  .eyebrow{font-family:'IBM Plex Mono',monospace;font-size:0.7rem;letter-spacing:0.14em;text-transform:uppercase;color:var(--amber-soft);}
-  .eyebrow.sage{color:var(--sage-soft);}
+  .wrap{max-width:1040px;margin:0 auto;padding:0 24px;}
+  .eyebrow{font-family:'IBM Plex Mono',monospace;font-size:0.7rem;letter-spacing:0.14em;text-transform:uppercase;color:var(--brand);}
 
-  /* hazard strip: a real detail, not decoration — this is the divider style
-     printed on the device's own warning labels (see the manual's caution
-     boxes), reused here as a structural rule. */
-  .hazard-rule{
-    height:5px;
-    margin:18px 0 22px;
-    background:repeating-linear-gradient(-45deg, var(--amber) 0 10px, var(--line) 10px 20px);
-    opacity:0.55;
-    border-radius:1px;
-  }
+  .rule{height:3px;width:64px;margin:18px 0 22px;background:var(--brand);border-radius:2px;}
 
   /* Hero */
   .hero{display:flex;justify-content:space-between;align-items:flex-start;gap:52px;}
-  .brand{display:flex;align-items:center;gap:10px;margin-bottom:18px;}
-  .credit{font-family:'IBM Plex Mono',monospace;font-size:0.78rem;letter-spacing:0.04em;color:var(--paper-muted);margin:0;}
-  .hero h1{font-size:3.1rem;line-height:0.96;letter-spacing:0.005em;color:var(--paper);}
-  .hero h1 em{font-style:normal;color:var(--amber);}
-  .intro{font-size:1.02rem;line-height:1.65;color:var(--paper-soft);max-width:46ch;margin:0;}
+  .brand-row{display:flex;align-items:center;gap:10px;margin-bottom:18px;}
+  .credit{font-family:'IBM Plex Mono',monospace;font-size:0.78rem;letter-spacing:0.04em;color:var(--ink-muted);margin:0;}
+  .hero h1{font-size:3.1rem;line-height:0.96;letter-spacing:0.005em;color:var(--ink);}
+  .hero h1 em{font-style:normal;color:var(--brand);}
+  .intro{font-size:1.02rem;line-height:1.65;color:var(--ink-soft);max-width:46ch;margin:0;}
   .stat-plate{display:flex;gap:0;flex-wrap:wrap;margin-top:30px;border:1px solid var(--line);background:var(--panel);border-radius:3px;}
   .stat{flex:1;min-width:110px;padding:12px 18px;border-right:1px solid var(--line);}
   .stat:last-child{border-right:none;}
-  .stat-value{font-family:'IBM Plex Mono',monospace;font-variant-numeric:tabular-nums;font-weight:600;font-size:1.15rem;color:var(--paper);display:block;}
-  .stat-label{font-size:0.68rem;letter-spacing:0.06em;text-transform:uppercase;color:var(--paper-muted);}
+  .stat-value{font-family:'IBM Plex Mono',monospace;font-variant-numeric:tabular-nums;font-weight:600;font-size:1.15rem;color:var(--ink);display:block;}
+  .stat-label{font-size:0.68rem;letter-spacing:0.06em;text-transform:uppercase;color:var(--ink-muted);}
 
   /* Hero nameplate */
   .hero-visual{flex-shrink:0;}
   .nameplate{position:relative;width:230px;background:var(--panel);border:1px solid var(--line);border-radius:3px;padding:22px 20px 18px;text-align:center;}
-  .rivet{position:absolute;width:6px;height:6px;border-radius:50%;background:var(--line);box-shadow:inset 0 1px 1px rgba(0,0,0,.5);}
+  .rivet{position:absolute;width:6px;height:6px;border-radius:50%;background:var(--line);box-shadow:inset 0 1px 1px rgba(0,0,0,.12);}
   .rivet.tl{top:8px;left:8px;} .rivet.tr{top:8px;right:8px;} .rivet.bl{bottom:8px;left:8px;} .rivet.br{bottom:8px;right:8px;}
-  .np-fan-ring{fill:none;stroke:var(--paper-muted);stroke-width:2;}
-  .np-fan-hub{fill:var(--amber);}
-  .np-blade{stroke:var(--paper-muted);stroke-width:3;stroke-linecap:round;}
+  .np-fan-ring{fill:none;stroke:var(--ink-muted);stroke-width:2;}
+  .np-fan-hub{fill:var(--brand);}
+  .np-blade{stroke:var(--ink-muted);stroke-width:3;stroke-linecap:round;}
   .idle-spin{transform-box:fill-box;transform-origin:center;animation:idlespin 14s linear infinite;}
-  .nameplate-name{font-family:'IBM Plex Mono',monospace;font-size:0.72rem;letter-spacing:0.08em;color:var(--paper);margin:14px 0 2px;text-transform:uppercase;}
-  .nameplate-sn{font-family:'IBM Plex Mono',monospace;font-size:0.68rem;color:var(--paper-muted);margin:0 0 10px;}
-  .nameplate-kit{display:inline-block;font-family:'IBM Plex Mono',monospace;font-size:0.66rem;letter-spacing:0.06em;text-transform:uppercase;color:var(--amber);border:1px solid var(--amber-dim);background:color-mix(in srgb, var(--amber) 12%, transparent);padding:4px 9px;border-radius:2px;}
+  .nameplate-name{font-family:'IBM Plex Mono',monospace;font-size:0.72rem;letter-spacing:0.08em;color:var(--ink);margin:14px 0 2px;text-transform:uppercase;}
+  .nameplate-sn{font-family:'IBM Plex Mono',monospace;font-size:0.68rem;color:var(--ink-muted);margin:0 0 10px;}
+  .nameplate-kit{display:inline-block;font-family:'IBM Plex Mono',monospace;font-size:0.63rem;letter-spacing:0.04em;text-transform:uppercase;color:var(--brand);border:1px solid var(--brand);background:var(--brand-dim);padding:4px 9px;border-radius:2px;max-width:190px;}
+
+  /* Loadout configurator */
+  .loadout{margin-top:80px;}
+  .loadout h2{font-size:1.7rem;color:var(--ink);}
+  .loadout-grid{display:grid;grid-template-columns:repeat(auto-fit,minmax(300px,1fr));gap:10px;margin-top:22px;}
+  .loadout-row{display:flex;align-items:center;gap:8px;background:var(--panel);border:1px solid var(--line);border-radius:3px;padding:8px 10px;}
+  .loadout-port{font-family:'IBM Plex Mono',monospace;font-size:0.72rem;color:var(--ink-muted);width:28px;flex-shrink:0;}
+  .loadout-icon{width:18px;height:18px;flex-shrink:0;}
+  .loadout-icon svg{width:100%;height:100%;}
+  .loadout-icon svg path,.loadout-icon svg circle,.loadout-icon svg line,.loadout-icon svg polygon,.loadout-icon svg rect{fill:none;stroke:currentColor;stroke-width:1.8;stroke-linecap:round;stroke-linejoin:round;}
+  select.lib-select,select.scent-select{font-family:'IBM Plex Mono',monospace;font-size:0.76rem;border-radius:2px;padding:6px 8px;cursor:pointer;background:var(--bg);}
+  select.lib-select{border:1px solid var(--tag-color, var(--line));color:var(--tag-color, var(--ink));background:var(--tag-tint, var(--bg));font-weight:600;flex:0 0 auto;width:118px;}
+  select.scent-select{border:1px solid var(--line);color:var(--ink);flex:1;min-width:0;}
 
   /* Console (tabs + device + scenarios) */
-  .console{margin-top:80px;}
+  .console{margin-top:56px;}
   .console-head{display:flex;align-items:baseline;justify-content:space-between;gap:16px;flex-wrap:wrap;}
-  .console h2{font-size:1.7rem;color:var(--paper);}
-  .console-sub{font-size:0.98rem;line-height:1.6;color:var(--paper-soft);max-width:62ch;margin-top:8px;}
+  .console h2{font-size:1.7rem;color:var(--ink);}
+  .console-sub{font-size:0.98rem;line-height:1.6;color:var(--ink-soft);max-width:62ch;margin-top:8px;}
 
   .tabs{display:inline-flex;border:1px solid var(--line);border-radius:3px;overflow:hidden;margin-top:22px;}
-  .tab{font-family:'IBM Plex Mono',monospace;font-size:0.75rem;letter-spacing:0.06em;text-transform:uppercase;color:var(--paper-muted);background:var(--panel);border:none;padding:10px 18px;cursor:pointer;border-right:1px solid var(--line);}
+  .tab{font-family:'IBM Plex Mono',monospace;font-size:0.75rem;letter-spacing:0.06em;text-transform:uppercase;color:var(--ink-muted);background:var(--panel);border:none;padding:10px 18px;cursor:pointer;border-right:1px solid var(--line);}
   .tab:last-child{border-right:none;}
-  .tab:hover{color:var(--paper);}
-  .tab[aria-selected="true"]{background:var(--amber);color:#221607;font-weight:600;}
+  .tab:hover{color:var(--ink);}
+  .tab[aria-selected="true"]{background:var(--brand);color:#fff;font-weight:600;}
 
   .bridge-panel{display:flex;align-items:center;gap:14px;flex-wrap:wrap;margin-top:16px;padding:12px 16px;background:var(--panel);border:1px solid var(--line);border-radius:3px;}
-  .bridge-toggle{display:flex;align-items:center;gap:8px;font-family:'IBM Plex Mono',monospace;font-size:0.8rem;color:var(--paper-soft);cursor:pointer;}
-  .bridge-toggle input{accent-color:var(--amber);width:15px;height:15px;cursor:pointer;}
-  .bridge-url{font-family:'IBM Plex Mono',monospace;font-size:0.78rem;color:var(--paper);background:var(--graphite);border:1px solid var(--line);border-radius:2px;padding:6px 9px;min-width:190px;flex:1;max-width:280px;}
+  .bridge-toggle{display:flex;align-items:center;gap:8px;font-family:'IBM Plex Mono',monospace;font-size:0.8rem;color:var(--ink-soft);cursor:pointer;}
+  .bridge-toggle input{accent-color:var(--brand);width:15px;height:15px;cursor:pointer;}
+  .bridge-url{font-family:'IBM Plex Mono',monospace;font-size:0.78rem;color:var(--ink);background:var(--bg);border:1px solid var(--line);border-radius:2px;padding:6px 9px;min-width:190px;flex:1;max-width:280px;}
   .bridge-url:disabled{opacity:0.5;}
-  .bridge-status{font-family:'IBM Plex Mono',monospace;font-size:0.76rem;color:var(--paper-muted);}
-  .bridge-status.ok{color:var(--sage-soft);}
+  .bridge-status{font-family:'IBM Plex Mono',monospace;font-size:0.76rem;color:var(--ink-muted);}
+  .bridge-status.ok{color:#2f7d52;}
   .bridge-status.error{color:var(--danger);}
-  .bridge-status.pending{color:var(--amber-soft);}
+  .bridge-status.pending{color:var(--brand);}
 
   .console-body{margin-top:22px;background:var(--panel);border:1px solid var(--line);border-radius:4px;padding:30px 26px;}
   .device-fan{display:block;margin:0 auto 22px;}
-  .fan-ring{fill:none;stroke:var(--paper-muted);stroke-width:2;}
-  .fan-hub{fill:var(--amber);}
-  .blade{stroke:var(--paper-muted);stroke-width:3;stroke-linecap:round;}
+  .fan-ring{fill:none;stroke:var(--ink-muted);stroke-width:2;}
+  .fan-hub{fill:var(--brand);}
+  .blade{stroke:var(--ink-muted);stroke-width:3;stroke-linecap:round;}
   .fan-blades{transform-box:fill-box;transform-origin:center;}
   .fan-blades.spin{animation:fanspin 1.1s ease-out;}
   @keyframes fanspin{from{transform:rotate(0deg);}to{transform:rotate(150deg);}}
@@ -121,98 +130,102 @@
 
   .ports{display:grid;grid-template-columns:repeat(5,1fr);gap:14px 10px;max-width:520px;margin:0 auto;}
   .port{display:flex;flex-direction:column;align-items:center;gap:6px;background:none;border:none;cursor:pointer;padding:4px;}
-  .port-num{position:relative;width:44px;height:44px;border-radius:50%;border:2px solid var(--line);display:flex;align-items:center;justify-content:center;color:var(--paper-soft);transition:background .2s ease,border-color .2s ease,color .2s ease,opacity .2s ease;}
+  .port-num{position:relative;width:44px;height:44px;border-radius:50%;border:2px solid var(--line);display:flex;align-items:center;justify-content:center;color:var(--port-color, var(--ink-soft));background:#fff;transition:background .2s ease,border-color .2s ease,color .2s ease,opacity .2s ease;}
   .port-icon{width:22px;height:22px;}
-  .port-icon path,.port-icon polygon,.port-icon circle,.port-icon line{fill:none;stroke:currentColor;stroke-width:1.7;stroke-linecap:round;stroke-linejoin:round;}
-  .port-num::after{content:"";position:absolute;inset:-2px;border-radius:50%;border:2px solid var(--amber);opacity:0;}
-  .port:hover .port-num{border-color:var(--amber-soft);color:var(--paper);}
+  .port-icon path,.port-icon polygon,.port-icon circle,.port-icon line,.port-icon rect{fill:none;stroke:currentColor;stroke-width:1.7;stroke-linecap:round;stroke-linejoin:round;}
+  .port-num::after{content:"";position:absolute;inset:-2px;border-radius:50%;border:2px solid var(--port-color, var(--brand));opacity:0;}
+  .port:hover .port-num{border-color:var(--port-color, var(--brand));}
   .port.pinging .port-num::after{animation:ping .8s ease-out;}
   @keyframes ping{0%{opacity:.8;transform:scale(1);}100%{opacity:0;transform:scale(1.8);}}
-  .port.active .port-num{background:var(--amber);border-color:var(--amber);color:#221607;}
-  .port-cap{font-family:'IBM Plex Mono',monospace;font-size:0.64rem;letter-spacing:0.02em;color:var(--paper-muted);text-align:center;line-height:1.2;max-width:64px;}
+  .port.active .port-num{background:var(--port-color, var(--brand));border-color:var(--port-color, var(--brand));color:#fff;}
+  .port-cap{font-family:'IBM Plex Mono',monospace;font-size:0.63rem;letter-spacing:0.01em;color:var(--ink-muted);text-align:center;line-height:1.2;max-width:68px;}
 
   .ports--readonly .port{cursor:default;}
   .ports--readonly .port:not(.active) .port-num{opacity:0.4;}
-  .ports--readonly .port:hover .port-num{border-color:var(--line);color:var(--paper-soft);}
+  .ports--readonly .port:hover .port-num{border-color:var(--line);}
 
   .mode-panel[hidden]{display:none;}
-  .mode-hint{text-align:center;font-size:0.85rem;color:var(--paper-muted);margin:22px 0 0;}
+  .mode-hint{text-align:center;font-size:0.85rem;color:var(--ink-muted);margin:22px 0 0;}
 
   .scenario-grid{display:grid;grid-template-columns:repeat(auto-fit,minmax(240px,1fr));gap:12px;margin-top:26px;}
-  .scenario-card{text-align:left;background:var(--panel-raised);border:1px solid var(--line);border-left:3px solid var(--amber-dim);border-radius:2px;padding:13px 15px;cursor:pointer;transition:border-color .2s ease,background .2s ease;}
-  .scenario-card:hover,.scenario-card:focus-visible{border-left-color:var(--amber);background:color-mix(in srgb, var(--amber) 6%, var(--panel-raised));}
-  .scenario-card.firing{border-left-color:var(--amber);background:color-mix(in srgb, var(--amber) 10%, var(--panel-raised));}
-  .scenario-name{display:block;font-family:'IBM Plex Mono',monospace;font-size:0.86rem;font-weight:600;color:var(--paper);margin-bottom:4px;}
-  .scenario-combo{display:block;font-family:'IBM Plex Mono',monospace;font-size:0.7rem;color:var(--amber-soft);margin-bottom:6px;}
-  .scenario-desc{display:block;font-size:0.82rem;line-height:1.5;color:var(--paper-muted);}
+  .scenario-card{text-align:left;background:var(--panel-raised);border:1px solid var(--line);border-left:3px solid var(--brand);border-radius:2px;padding:13px 15px;cursor:pointer;transition:border-color .2s ease,background .2s ease,opacity .2s ease;}
+  .scenario-card:hover,.scenario-card:focus-visible{background:var(--brand-dim);}
+  .scenario-card.firing{background:var(--brand-dim);}
+  .scenario-card.locked{border-left-color:var(--line);cursor:default;opacity:0.72;}
+  .scenario-card.locked:hover{background:var(--panel-raised);}
+  .scenario-name{display:block;font-family:'IBM Plex Mono',monospace;font-size:0.86rem;font-weight:600;color:var(--ink);margin-bottom:4px;}
+  .scenario-combo{display:block;font-family:'IBM Plex Mono',monospace;font-size:0.7rem;color:var(--brand);margin-bottom:6px;}
+  .scenario-missing{display:block;font-family:'IBM Plex Mono',monospace;font-size:0.7rem;color:var(--danger);margin-bottom:6px;}
+  .scenario-desc{display:block;font-size:0.82rem;line-height:1.5;color:var(--ink-muted);}
+  .scenario-status{display:inline-block;font-family:'IBM Plex Mono',monospace;font-size:0.6rem;letter-spacing:0.06em;text-transform:uppercase;padding:2px 6px;border-radius:2px;margin-bottom:6px;}
+  .scenario-status.ready{background:#e6f2ea;color:#2f7d52;}
+  .scenario-status.locked-status{background:var(--panel);color:var(--ink-muted);}
 
   /* Now playing */
   .now-playing{background:var(--panel);border:1px solid var(--line);border-radius:4px;padding:22px 24px;margin-top:18px;}
-  .np-hint{font-size:0.92rem;color:var(--paper-muted);margin:0;}
-  .np-kicker{font-family:'IBM Plex Mono',monospace;font-size:0.72rem;letter-spacing:0.08em;text-transform:uppercase;color:var(--amber);margin:0 0 4px;}
-  .now-playing h3{font-size:1.35rem;color:var(--paper);margin-bottom:6px;}
-  .np-desc{font-size:0.92rem;line-height:1.55;color:var(--paper-soft);margin:0 0 14px;max-width:60ch;}
-  .np-cmd{display:block;font-family:'IBM Plex Mono',monospace;font-size:0.8rem;font-variant-numeric:tabular-nums;background:var(--graphite);border:1px solid var(--line);color:var(--amber-soft);padding:7px 11px;border-radius:2px;margin-top:6px;opacity:0;transform:translateY(4px);transition:opacity .25s ease,transform .25s ease;}
+  .np-hint{font-size:0.92rem;color:var(--ink-muted);margin:0;}
+  .np-kicker{font-family:'IBM Plex Mono',monospace;font-size:0.72rem;letter-spacing:0.08em;text-transform:uppercase;color:var(--brand);margin:0 0 4px;}
+  .now-playing h3{font-size:1.35rem;color:var(--ink);margin-bottom:6px;}
+  .np-desc{font-size:0.92rem;line-height:1.55;color:var(--ink-soft);margin:0 0 14px;max-width:60ch;}
+  .np-cmd{display:block;font-family:'IBM Plex Mono',monospace;font-size:0.8rem;font-variant-numeric:tabular-nums;background:var(--bg);border:1px solid var(--line);color:var(--brand);padding:7px 11px;border-radius:2px;margin-top:6px;opacity:0;transform:translateY(4px);transition:opacity .25s ease,transform .25s ease;}
   .np-cmd.fired{opacity:1;transform:translateY(0);}
-  .np-cmd .np-cmd-label{color:var(--paper-muted);float:right;}
+  .np-cmd .np-cmd-label{color:var(--ink-muted);float:right;}
 
-  /* Scent atmosphere: background + foreground preview for any cartridge
-     across both kits, driven by the dropdown (and mirrored by port/scenario
-     activation above). */
+  /* Scent atmosphere */
   .atmosphere-picker{display:flex;align-items:center;gap:12px;margin-top:26px;flex-wrap:wrap;}
-  .atmosphere-label{font-family:'IBM Plex Mono',monospace;font-size:0.72rem;letter-spacing:0.08em;text-transform:uppercase;color:var(--paper-muted);}
-  .atmosphere-select{font-family:'IBM Plex Mono',monospace;font-size:0.85rem;color:var(--paper);background:var(--panel);border:1px solid var(--line);border-radius:3px;padding:9px 30px 9px 12px;cursor:pointer;}
-  .stage{position:relative;height:300px;margin-top:18px;border:1px solid var(--line);border-radius:4px;overflow:hidden;background:var(--graphite);}
+  .atmosphere-label{font-family:'IBM Plex Mono',monospace;font-size:0.72rem;letter-spacing:0.08em;text-transform:uppercase;color:var(--ink-muted);}
+  .atmosphere-select{font-family:'IBM Plex Mono',monospace;font-size:0.85rem;color:var(--ink);background:var(--panel);border:1px solid var(--line);border-radius:3px;padding:9px 30px 9px 12px;cursor:pointer;}
+  .stage{position:relative;height:300px;margin-top:18px;border:1px solid var(--line);border-radius:4px;overflow:hidden;background:#fff;}
   .stage-bg{position:absolute;inset:0;opacity:0;transition:opacity .7s ease;}
   .stage canvas{position:absolute;inset:0;width:100%;height:100%;}
-  .stage-caption{position:absolute;left:0;right:0;bottom:0;padding:16px 20px;background:linear-gradient(to top, rgba(10,10,12,.75), transparent 85%);pointer-events:none;}
-  .stage-kicker{font-family:'IBM Plex Mono',monospace;font-size:0.68rem;letter-spacing:0.1em;text-transform:uppercase;color:var(--amber-soft);margin:0 0 2px;}
-  .stage-caption h3{font-size:1.5rem;color:var(--paper);margin:0 0 4px;}
-  .stage-desc{font-size:0.85rem;line-height:1.5;color:var(--paper-soft);margin:0;max-width:56ch;}
+  .stage-caption{position:absolute;left:0;right:0;bottom:0;padding:16px 20px;background:linear-gradient(to top, rgba(255,255,255,.9), transparent 85%);pointer-events:none;}
+  .stage-kicker{font-family:'IBM Plex Mono',monospace;font-size:0.68rem;letter-spacing:0.1em;text-transform:uppercase;color:var(--brand);margin:0 0 2px;}
+  .stage-caption h3{font-size:1.5rem;color:var(--ink);margin:0 0 4px;}
+  .stage-desc{font-size:0.85rem;line-height:1.5;color:var(--ink-soft);margin:0;max-width:56ch;}
 
   /* Sections */
   section.block{margin-top:76px;}
-  section.block h2{font-size:1.7rem;color:var(--paper);}
+  section.block h2{font-size:1.7rem;color:var(--ink);}
   .section-head{display:flex;align-items:center;gap:12px;}
   .section-icon{flex-shrink:0;}
   .section-icon .icon-shape{stroke-width:2.2;}
-  .section-icon.sage .icon-shape{stroke:var(--sage);}
-  .section-icon.amber .icon-shape{stroke:var(--amber);}
-  .section-intro{font-size:0.98rem;line-height:1.6;color:var(--paper-soft);max-width:62ch;margin-top:10px;}
+  .section-icon.nature .icon-shape{stroke:var(--lib-nature);}
+  .section-icon.brand .icon-shape{stroke:var(--brand);}
+  .section-intro{font-size:0.98rem;line-height:1.6;color:var(--ink-soft);max-width:62ch;margin-top:10px;}
 
   /* Cards (wellness) */
   .grid{display:grid;grid-template-columns:repeat(auto-fit,minmax(260px,1fr));gap:14px;margin-top:24px;}
-  .card{position:relative;background:var(--panel);border:1px solid var(--line);border-left:3px solid var(--sage-dim);border-radius:2px;padding:16px 16px 16px 20px;cursor:pointer;overflow:hidden;transition:border-color .2s ease;}
-  .card:hover,.card:focus-visible{border-left-color:var(--sage);}
+  .card{position:relative;background:var(--panel);border:1px solid var(--line);border-left:3px solid var(--lib-nature);border-radius:2px;padding:16px 16px 16px 20px;cursor:pointer;overflow:hidden;transition:background .2s ease;}
+  .card:hover,.card:focus-visible{background:var(--lib-nature-tint);}
   .card-top{display:flex;align-items:flex-start;gap:12px;}
   .icon{width:26px;height:26px;flex-shrink:0;margin-top:2px;}
-  .icon-shape{fill:none;stroke:var(--sage);stroke-width:2.4;stroke-linecap:round;stroke-linejoin:round;}
+  .icon-shape{fill:none;stroke:var(--lib-nature);stroke-width:2.4;stroke-linecap:round;stroke-linejoin:round;}
   .card-title-group{flex:1;}
-  .card h3{font-family:'IBM Plex Sans',sans-serif;font-weight:700;text-transform:none;font-size:1.02rem;color:var(--paper);margin-bottom:3px;}
-  .teaser{font-size:0.85rem;color:var(--paper-muted);margin:0;}
-  .toggle{font-family:'IBM Plex Mono',monospace;font-size:1.1rem;color:var(--paper-muted);line-height:1;flex-shrink:0;width:16px;text-align:center;}
+  .card h3{font-family:'IBM Plex Sans',sans-serif;font-weight:700;text-transform:none;font-size:1.02rem;color:var(--ink);margin-bottom:3px;}
+  .teaser{font-size:0.85rem;color:var(--ink-muted);margin:0;}
+  .toggle{font-family:'IBM Plex Mono',monospace;font-size:1.1rem;color:var(--ink-muted);line-height:1;flex-shrink:0;width:16px;text-align:center;}
   .detail{max-height:0;overflow:hidden;opacity:0;transition:max-height .3s ease,opacity .3s ease,margin-top .3s ease;margin-top:0;padding-left:38px;}
   .card.expanded .detail{max-height:160px;opacity:1;margin-top:10px;}
-  .detail p{font-size:0.9rem;line-height:1.55;color:var(--paper-soft);margin:0;}
+  .detail p{font-size:0.9rem;line-height:1.55;color:var(--ink-soft);margin:0;}
 
   /* Process steps */
   .steps{display:flex;gap:24px;flex-wrap:wrap;margin-top:28px;}
-  .step{flex:1;min-width:200px;border-top:2px solid var(--amber);padding-top:12px;}
-  .step-num{font-family:'IBM Plex Mono',monospace;font-size:0.85rem;color:var(--amber);margin:0;}
-  .step h4{font-family:'IBM Plex Sans',sans-serif;font-weight:700;text-transform:none;font-size:1.02rem;color:var(--paper);margin:4px 0 6px;}
-  .step p{font-size:0.87rem;line-height:1.55;color:var(--paper-soft);margin:0;}
-  .format-line{margin-top:18px;font-family:'IBM Plex Mono',monospace;font-size:0.82rem;background:var(--panel);border:1px solid var(--line);color:var(--amber-soft);padding:10px 14px;border-radius:2px;display:inline-block;}
-  .format-note{font-size:0.82rem;color:var(--paper-muted);margin-top:8px;}
-  .code-heading{font-size:1.3rem;color:var(--paper);margin-top:30px;margin-bottom:2px;}
-  .code-block{margin-top:14px;background:var(--graphite);border:1px solid var(--line);border-radius:4px;padding:16px 18px;overflow-x:auto;}
-  .code-block code{font-family:'IBM Plex Mono',monospace;font-size:0.82rem;line-height:1.65;color:var(--paper-soft);white-space:pre;}
-  .code-note{font-size:0.82rem;color:var(--paper-muted);margin-top:10px;}
-  .code-note code{display:inline;padding:2px 6px;background:var(--panel);border:1px solid var(--line);border-radius:2px;color:var(--amber-soft);}
+  .step{flex:1;min-width:200px;border-top:2px solid var(--brand);padding-top:12px;}
+  .step-num{font-family:'IBM Plex Mono',monospace;font-size:0.85rem;color:var(--brand);margin:0;}
+  .step h4{font-family:'IBM Plex Sans',sans-serif;font-weight:700;text-transform:none;font-size:1.02rem;color:var(--ink);margin:4px 0 6px;}
+  .step p{font-size:0.87rem;line-height:1.55;color:var(--ink-soft);margin:0;}
+  .format-line{margin-top:18px;font-family:'IBM Plex Mono',monospace;font-size:0.82rem;background:var(--panel);border:1px solid var(--line);color:var(--brand);padding:10px 14px;border-radius:2px;display:inline-block;}
+  .format-note{font-size:0.82rem;color:var(--ink-muted);margin-top:8px;}
+  .code-heading{font-size:1.3rem;color:var(--ink);margin-top:30px;margin-bottom:2px;}
+  .code-block{margin-top:14px;background:#fbfaf7;border:1px solid var(--line);border-radius:4px;padding:16px 18px;overflow-x:auto;}
+  .code-block code{font-family:'IBM Plex Mono',monospace;font-size:0.82rem;line-height:1.65;color:var(--ink-soft);white-space:pre;}
+  .code-note{font-size:0.82rem;color:var(--ink-muted);margin-top:10px;}
+  .code-note code{display:inline;padding:2px 6px;background:var(--panel);border:1px solid var(--line);border-radius:2px;color:var(--brand);}
 
   footer{margin-top:76px;border-top:1px solid var(--line);padding-top:20px;}
-  footer p{font-size:0.85rem;color:var(--paper-muted);margin:0 0 6px;}
+  footer p{font-size:0.85rem;color:var(--ink-muted);margin:0 0 6px;}
 
-  :focus-visible{outline:2px solid var(--amber);outline-offset:2px;}
+  :focus-visible{outline:2px solid var(--brand);outline-offset:2px;}
 
   @media(max-width:760px){
     .hero{flex-direction:column;align-items:flex-start;gap:26px;}
@@ -230,25 +243,19 @@
 <div class="wrap">
   <header class="hero">
     <div class="hero-text">
-      <div class="brand">
+      <div class="brand-row">
         <svg viewBox="0 0 40 40" width="26" height="26" aria-hidden="true">
-          <defs>
-            <linearGradient id="brandGrad" x1="0%" y1="100%" x2="100%" y2="0%">
-              <stop offset="0%" stop-color="#e2892c"></stop>
-              <stop offset="100%" stop-color="#5fae93"></stop>
-            </linearGradient>
-          </defs>
-          <circle cx="20" cy="20" r="2.6" fill="url(#brandGrad)"></circle>
-          <path d="M20 20 m-8,0 a8,8 0 0 1 8,-8" fill="none" stroke="url(#brandGrad)" stroke-width="2" stroke-linecap="round"></path>
-          <path d="M20 20 m8,0 a8,8 0 0 1 -8,8" fill="none" stroke="url(#brandGrad)" stroke-width="2" stroke-linecap="round"></path>
-          <path d="M20 20 m-13,0 a13,13 0 0 1 13,-13" fill="none" stroke="url(#brandGrad)" stroke-width="1.6" stroke-linecap="round" opacity="0.55"></path>
-          <path d="M20 20 m13,0 a13,13 0 0 1 -13,13" fill="none" stroke="url(#brandGrad)" stroke-width="1.6" stroke-linecap="round" opacity="0.55"></path>
+          <circle cx="20" cy="20" r="2.6" fill="var(--brand)"></circle>
+          <path d="M20 20 m-8,0 a8,8 0 0 1 8,-8" fill="none" stroke="var(--brand)" stroke-width="2" stroke-linecap="round"></path>
+          <path d="M20 20 m8,0 a8,8 0 0 1 -8,8" fill="none" stroke="var(--brand)" stroke-width="2" stroke-linecap="round"></path>
+          <path d="M20 20 m-13,0 a13,13 0 0 1 13,-13" fill="none" stroke="var(--brand-soft)" stroke-width="1.6" stroke-linecap="round"></path>
+          <path d="M20 20 m13,0 a13,13 0 0 1 -13,13" fill="none" stroke="var(--brand-soft)" stroke-width="1.6" stroke-linecap="round"></path>
         </svg>
         <p class="credit">Immersive Experiences Lab</p>
       </div>
       <h1>Scent<br>Sim<em>ulation</em></h1>
-      <div class="hazard-rule" role="presentation"></div>
-      <p class="intro">The lab's Olorama Professional 10-Scents Generator holds ten cartridges and releases any of them on cue — from a calming aromatherapy note to the acrid smell of a structure fire — synced to whatever is happening in the simulation.</p>
+      <div class="rule" role="presentation"></div>
+      <p class="intro">The Olorama Professional 10-Scents Generator holds ten cartridges and releases any of them on cue. Load it from Nature, Food, Ambiance &amp; Fragrance, or Action Scene scents, then trigger single cartridges or whole scenarios synced to what's happening in the simulation.</p>
       <div class="stat-plate">
         <div class="stat"><span class="stat-value">10</span><span class="stat-label">Cartridges</span></div>
         <div class="stat"><span class="stat-value">30 m²</span><span class="stat-label">Coverage</span></div>
@@ -273,10 +280,17 @@
         </svg>
         <p class="nameplate-name">Olorama Professional<br>10-Scents Generator</p>
         <p class="nameplate-sn">SN-00222 &nbsp;·&nbsp; 192.168.0.40</p>
-        <span class="nameplate-kit">Kit: Tactical / Emergency</span>
+        <span class="nameplate-kit" id="nameplateKit">Loading…</span>
       </div>
     </div>
   </header>
+
+  <section class="loadout">
+    <p class="eyebrow">Configure</p>
+    <h2>Load Your Cartridges</h2>
+    <p class="section-intro">Pick a library, then a scent, for each of the 10 physical ports — this is what you actually have loaded. Everything below (the ports, the scenarios you can fire, the atmosphere preview) follows this.</p>
+    <div class="loadout-grid" id="loadoutGrid"></div>
+  </section>
 
   <section class="console">
     <div class="console-head">
@@ -285,7 +299,7 @@
         <h2>The Generator</h2>
       </div>
     </div>
-    <p class="console-sub">Fire one cartridge at a time, or pick a scenario to see how a real training scene layers several scents in sequence. On its own this only previews the command — browsers can't open the raw UDP socket that would reach the device — but turning on the bridge below sends it for real.</p>
+    <p class="console-sub">Fire one cartridge at a time, or pick a scenario built from whatever you've loaded above. On its own this only previews the command — browsers can't open the raw UDP socket that would reach the device — but turning on the bridge below sends it for real.</p>
 
     <div class="bridge-panel">
       <label class="bridge-toggle">
@@ -317,18 +331,7 @@
         <circle class="fan-hub" cx="40" cy="40" r="5"></circle>
       </svg>
 
-      <div class="ports" id="ports">
-        <button class="port" data-port="1" aria-pressed="false" aria-label="Port 1: Blood"><span class="port-num"><svg class="port-icon" viewBox="0 0 24 24"><path d="M12 4 L17 14 A5 5 0 1 1 7 14 Z"></path></svg></span><span class="port-cap">Blood</span></button>
-        <button class="port" data-port="2" aria-pressed="false" aria-label="Port 2: Fire and Explosions"><span class="port-num"><svg class="port-icon" viewBox="0 0 24 24"><path d="M12 4 C15 9 17 12 17 16 C17 19.5 14.8 21.5 12 21.5 C9.2 21.5 7 19.5 7 16 C7 12 9 9 12 4Z"></path></svg></span><span class="port-cap">Fire</span></button>
-        <button class="port" data-port="3" aria-pressed="false" aria-label="Port 3: Gunfire and Gunpowder"><span class="port-num"><svg class="port-icon" viewBox="0 0 24 24"><circle cx="12" cy="12" r="6"></circle><line x1="12" y1="1" x2="12" y2="5"></line><line x1="12" y1="19" x2="12" y2="23"></line><line x1="1" y1="12" x2="5" y2="12"></line><line x1="19" y1="12" x2="23" y2="12"></line></svg></span><span class="port-cap">Gunfire</span></button>
-        <button class="port" data-port="4" aria-pressed="false" aria-label="Port 4: Burnt Rubber"><span class="port-num"><svg class="port-icon" viewBox="0 0 24 24"><circle cx="12" cy="12" r="8"></circle><circle cx="12" cy="12" r="3"></circle><line x1="12" y1="4" x2="12" y2="6.5"></line><line x1="12" y1="17.5" x2="12" y2="20"></line><line x1="4" y1="12" x2="6.5" y2="12"></line><line x1="17.5" y1="12" x2="20" y2="12"></line></svg></span><span class="port-cap">Rubber</span></button>
-        <button class="port" data-port="5" aria-pressed="false" aria-label="Port 5: Burnt Plastic"><span class="port-num"><svg class="port-icon" viewBox="0 0 24 24"><polygon points="12,2.5 19,7 19,17 12,21.5 5,17 5,7"></polygon><line x1="9" y1="10.5" x2="15" y2="13.5"></line><line x1="15" y1="10.5" x2="9" y2="13.5"></line></svg></span><span class="port-cap">Plastic</span></button>
-        <button class="port" data-port="6" aria-pressed="false" aria-label="Port 6: Burnt Car Oil"><span class="port-num"><svg class="port-icon" viewBox="0 0 24 24"><path d="M7 5 H17 V19 H7 Z"></path><line x1="7" y1="9.5" x2="17" y2="9.5"></line><line x1="7" y1="14.5" x2="17" y2="14.5"></line></svg></span><span class="port-cap">Car Oil</span></button>
-        <button class="port" data-port="7" aria-pressed="false" aria-label="Port 7: Gasoline"><span class="port-num"><svg class="port-icon" viewBox="0 0 24 24"><path d="M5 21 V6 A2 2 0 0 1 7 4 H11 A2 2 0 0 1 13 6 V21"></path><line x1="4" y1="21" x2="13" y2="21"></line><path d="M13 9 H15 A2 2 0 0 1 17 11 V16 A1.5 1.5 0 0 0 20 16 V10 L18 8"></path></svg></span><span class="port-cap">Gasoline</span></button>
-        <button class="port" data-port="8" aria-pressed="false" aria-label="Port 8: Diesel"><span class="port-num"><svg class="port-icon" viewBox="0 0 24 24"><path d="M7 21 V10 H17 V21 Z"></path><path d="M10 10 V6 H14 V10"></path><line x1="9.5" y1="14" x2="9.5" y2="18"></line><line x1="14.5" y1="14" x2="14.5" y2="18"></line></svg></span><span class="port-cap">Diesel</span></button>
-        <button class="port" data-port="9" aria-pressed="false" aria-label="Port 9: Aviation Gas"><span class="port-num"><svg class="port-icon" viewBox="0 0 24 24"><polygon points="3,19 21,12 3,5 8.5,12"></polygon></svg></span><span class="port-cap">Aviation</span></button>
-        <button class="port" data-port="10" aria-pressed="false" aria-label="Port 10: Volcano"><span class="port-num"><svg class="port-icon" viewBox="0 0 24 24"><polygon points="3,20 12,5 21,20"></polygon><path d="M10 4 Q12 1 14 4"></path></svg></span><span class="port-cap">Volcano</span></button>
-      </div>
+      <div class="ports" id="ports"></div>
 
       <div class="mode-panel" id="singlePanel">
         <p class="mode-hint">Click a port to preview a single scent.</p>
@@ -345,43 +348,18 @@
 
   <section class="block">
     <div class="section-head">
-      <svg class="section-icon amber" viewBox="0 0 24 24" width="22" height="22" aria-hidden="true">
+      <svg class="section-icon brand" viewBox="0 0 24 24" width="22" height="22" aria-hidden="true">
         <path class="icon-shape" d="M3 8 H14 A3 3 0 1 0 11 4"></path>
         <path class="icon-shape" d="M3 13 H18 A3 3 0 1 1 15 18"></path>
         <path class="icon-shape" d="M3 18 H10"></path>
       </svg>
       <h2>Scent Atmosphere</h2>
     </div>
-    <p class="section-intro">Every cartridge across both kits, previewed as color and drift — the mood a scent sets and the way it moves through the air. Picking a port or scenario above updates this too.</p>
+    <p class="section-intro">Every cartridge across all four libraries, previewed as color and drift — the mood a scent sets and the way it moves through the air. Picking a port or scenario above updates this too.</p>
 
     <div class="atmosphere-picker">
       <label class="atmosphere-label" for="scentSelect">Scent</label>
-      <select class="atmosphere-select" id="scentSelect">
-        <optgroup label="Tactical &amp; Emergency Kit">
-          <option value="blood">Blood</option>
-          <option value="fire">Fire &amp; Explosions</option>
-          <option value="gunfire">Gunfire &amp; Gunpowder</option>
-          <option value="rubber">Burnt Rubber</option>
-          <option value="plastic">Burnt Plastic</option>
-          <option value="car-oil">Burnt Car Oil</option>
-          <option value="gasoline">Gasoline</option>
-          <option value="diesel">Diesel</option>
-          <option value="aviation">Aviation Gas</option>
-          <option value="volcano">Volcano</option>
-        </optgroup>
-        <optgroup label="Wellness &amp; Aromatherapy Kit">
-          <option value="lavender" selected>Lavender</option>
-          <option value="sea-breeze">Sea Breeze</option>
-          <option value="pine">Pine Forest</option>
-          <option value="vanilla">Vanilla</option>
-          <option value="fresh-linen">Fresh Linen</option>
-          <option value="citrus">Citrus Grove</option>
-          <option value="green-tea">Green Tea</option>
-          <option value="sandalwood">Sandalwood</option>
-          <option value="rain-earth">Rain-Fresh Earth</option>
-          <option value="chamomile">Chamomile</option>
-        </optgroup>
-      </select>
+      <select class="atmosphere-select" id="scentSelect"></select>
     </div>
 
     <div class="stage" id="atmosphereStage">
@@ -389,7 +367,7 @@
       <div class="stage-bg" id="stageBgB"></div>
       <canvas id="atmosphereCanvas"></canvas>
       <div class="stage-caption">
-        <p class="stage-kicker" id="stageKit">Wellness &amp; Aromatherapy Kit</p>
+        <p class="stage-kicker" id="stageKit">Nature Smells</p>
         <h3 id="stageName">Lavender</h3>
         <p class="stage-desc" id="stageDesc">Soft and floral, the classic calm-down scent.</p>
       </div>
@@ -398,13 +376,13 @@
 
   <section class="block">
     <div class="section-head">
-      <svg class="section-icon sage" viewBox="0 0 24 24" width="22" height="22" aria-hidden="true">
+      <svg class="section-icon nature" viewBox="0 0 24 24" width="22" height="22" aria-hidden="true">
         <path class="icon-shape" d="M4 20 C4 10 13 4 20 4 C20 14 13 20 4 20Z"></path>
         <line class="icon-shape" x1="5" y1="19" x2="18" y2="6"></line>
       </svg>
       <h2>Also Loaded: A Wellness Kit</h2>
     </div>
-    <p class="section-intro">The same generator takes a second kit of ten cartridges. Swap the tactical set for a calmer one and the hardware runs sessions like these instead.</p>
+    <p class="section-intro">The same generator takes a calmer session-based kit, drawing on Nature and Ambiance &amp; Fragrance scents. Swap the tactical set for this one and the hardware runs sessions like these instead.</p>
     <div class="grid">
       <article class="card" tabindex="0" role="button" aria-expanded="false">
         <div class="card-top">
@@ -453,7 +431,7 @@
           <span class="toggle">+</span>
         </div>
         <div class="detail">
-          <p>Pairs lavender, sea-breeze, or pine with a calm visual scene to support stress reduction and mindfulness sessions.</p>
+          <p>Pairs lavender, rain-fresh ground, or pine resin with a calm visual scene to support stress reduction and mindfulness sessions.</p>
         </div>
       </article>
 
@@ -496,7 +474,7 @@
 
   <section class="block">
     <div class="section-head">
-      <svg class="section-icon amber" viewBox="0 0 24 24" width="22" height="22" aria-hidden="true">
+      <svg class="section-icon brand" viewBox="0 0 24 24" width="22" height="22" aria-hidden="true">
         <polyline class="icon-shape" points="4,6 10,12 4,18"></polyline>
         <line class="icon-shape" x1="12" y1="18" x2="20" y2="18"></line>
       </svg>
@@ -526,7 +504,7 @@
       </div>
     </div>
     <code class="format-line">OUT,[port 01–10],[intensity 0100–0500],1,[fan time 1000–9000 ms],1000</code>
-    <p class="format-note">The two fixed fields in the middle and at the end are internal — the manual notes they shouldn't be changed.</p>
+    <p class="format-note">The two fixed fields in the middle and at the end are internal — the manual notes they shouldn't be changed. The port number is a physical slot (1–10) — whatever scent you've loaded into it above is what fires.</p>
 
     <h3 class="code-heading">Triggering It From Node.js</h3>
     <p class="section-intro">The manual only shows C++ and Java samples. This repo has the same UDP message in JavaScript as a real, tested tool — not just a snippet — using Node's built-in dgram module. It runs as a standalone script, not inside a browser — browsers can't open raw UDP sockets, which is also why the ports above only simulate the command rather than firing it.</p>
@@ -546,96 +524,258 @@ function encodeCommand({ port, intensity = 100, fanMs = 2000 }) {
 const socket = dgram.createSocket('udp4');
 socket.send(encodeCommand({ port: 2, intensity: 150, fanMs: 3000 }), DEVICE_PORT, DEVICE_IP);</code></div>
     <p class="code-note">Fire one port: <code>node tools/activate-scent.js 2 --intensity 150 --fan-ms 3000</code></p>
-    <p class="code-note">Fire a whole scenario: <code>node tools/activate-scent.js --scenario vehicle-collision</code></p>
+    <p class="code-note">The CLI's built-in <code>--scenario</code> flag still knows the original 10 tactical ports (see <code>tools/scenario-catalog.js</code>) — the library/scent picker above is a page-only planning view for the fuller catalog and doesn't change what's wired to the CLI or bridge, which always just means "fire physical port N."</p>
     <p class="code-note">The user guide PDF doesn't print the UDP port, but Olorama's separate C++ integration guide does: <strong>5010</strong> by default, which is what these tools use. If your unit differs, override it with <code>--host</code>/<code>--port</code> or the <code>OLORAMA_HOST</code>/<code>OLORAMA_PORT</code> env vars.</p>
-    <p class="code-note">No physical generator on hand? <code>npm run simulate</code> starts <code>tools/scent-device-simulator.js</code>, a local UDP listener that decodes the same command and prints which cartridge and intensity it received. <code>npm test</code> runs the automated suite, which sends real UDP packets to that simulator and checks all 10 ports — and every scenario — decode correctly.</p>
+    <p class="code-note">No physical generator on hand? <code>npm run simulate</code> starts <code>tools/scent-device-simulator.js</code>, a local UDP listener that decodes the same command and prints which cartridge and intensity it received. <code>npm test</code> runs the automated suite against it.</p>
   </section>
 
   <footer>
     <p>A concept showcase from the Immersive Experiences Lab, built around the Olorama Professional 10-Scents Generator.</p>
-    <p>Cartridges contain flammable aromatic compounds — store and handle per the manufacturer's guidance.</p>
+    <p>Cartridges contain flammable or volatile aromatic compounds — store and handle per the manufacturer's guidance.</p>
   </footer>
 </div>
 
 <script>
-  var scentCatalog = {
-    1:{name:"Blood", desc:"Recreates the metallic scent of blood so combat-medic and mass-casualty training feels closer to the real thing."},
-    2:{name:"Fire & Explosions", desc:"Combines smoke and combustion notes to sharpen recognition speed in firefighting and explosive-ordnance training."},
-    3:{name:"Gunfire & Gunpowder", desc:"Reproduces the acrid smell of spent gunpowder for tactical, security, and range-safety training."},
-    4:{name:"Burnt Rubber", desc:"Simulates scorched rubber for vehicle-fire and traffic-collision response training."},
-    5:{name:"Burnt Plastic", desc:"Recreates the sharp smell of melting plastic so trainees learn to recognize electrical and industrial fires by scent."},
-    6:{name:"Burnt Car Oil", desc:"Reproduces overheated motor oil for vehicle-fire and mechanical-failure response scenarios."},
-    7:{name:"Gasoline", desc:"Simulates a gasoline spill so responders can practise identifying fuel hazards by smell before they see them."},
-    8:{name:"Diesel", desc:"Recreates diesel fuel for transportation-accident and industrial-site training."},
-    9:{name:"Aviation Gas", desc:"Simulates aviation fuel for airport emergency-response and aircraft-incident training."},
-    10:{name:"Volcano", desc:"Reproduces sulfurous volcanic gas for geoscience education and natural-disaster response training."}
+  // ============================================================
+  // Data: the 4 real cartridge libraries and their scents.
+  // ============================================================
+  var LIBRARIES = {
+    nature:   { name:"Nature Smells",            color:"#3f7a52", tint:"#eaf3ec" },
+    food:     { name:"Food Smells",               color:"#c9793a", tint:"#faf0e6" },
+    ambiance: { name:"Ambiance & Fragrance",       color:"#7d5fa6", tint:"#f2eef8" },
+    action:   { name:"Action Scene Smells",        color:"#c4453a", tint:"#fbeceb" }
   };
 
-  // Mirrors tools/scenario-catalog.js — keep the two in sync.
-  var scenarios = [
-    { id:"vehicle-collision", name:"Vehicle Collision", desc:"Traffic-collision response: injury, scorched tires, and a fuel spill at the scene.", ports:[1,4,7] },
-    { id:"structure-fire", name:"Structure Fire", desc:"A building fire with melting synthetics and scorched fittings.", ports:[2,5,4] },
-    { id:"active-shooter", name:"Active Shooter Response", desc:"Tactical entry training: spent gunpowder over a casualty.", ports:[3,1] },
-    { id:"volcanic-eruption", name:"Volcanic Eruption", desc:"Geoscience and natural-disaster training: sulfurous gas and combustion.", ports:[10,2] },
-    { id:"aircraft-incident", name:"Aircraft Incident", desc:"Airport emergency response: aviation fuel, fire, and scorched rubber on the tarmac.", ports:[9,2,4] },
-    { id:"fuel-depot-spill", name:"Fuel Depot Spill", desc:"Industrial-site hazmat training: three fuel types pooling together.", ports:[7,8,6] }
+  var LIB_ICONS = {
+    nature:   '<path d="M4 20 C4 10 13 4 20 4 C20 14 13 20 4 20Z"></path><line x1="5" y1="19" x2="18" y2="6"></line>',
+    food:     '<line x1="7" y1="3" x2="7" y2="21"></line><path d="M5 3 V9 Q5 11 7 11 Q9 11 9 9 V3"></path><path d="M17 3 C17 3 14 6 14 10 C14 12 15.5 12.5 16 12.5 V21"></path>',
+    ambiance: '<rect x="9" y="10" width="6" height="11" rx="1"></rect><rect x="10.5" y="6" width="3" height="4"></rect><line x1="9" y1="3" x2="15" y2="3"></line><line x1="12" y1="3" x2="12" y2="6"></line>',
+    action:   '<polygon points="12,3 21,12 12,21 3,12"></polygon><line x1="12" y1="8" x2="12" y2="13"></line><circle cx="12" cy="16.3" r="0.9" fill="currentColor" stroke="none"></circle>'
+  };
+
+  var SCENTS = [
+    // Nature Smells
+    {id:"fresh-grass", name:"Fresh Grass", lib:"nature", desc:"Cut grass, green and sharp."},
+    {id:"rain-wet-ground", name:"Rain / Wet Ground", lib:"nature", desc:"Petrichor — rain hitting dry earth."},
+    {id:"jungle", name:"Jungle", lib:"nature", desc:"Dense, humid, and alive."},
+    {id:"wood-logs", name:"Wood Logs", lib:"nature", desc:"Split timber and bark."},
+    {id:"hay", name:"Hay", lib:"nature", desc:"Sun-dried straw in a barn."},
+    {id:"roses", name:"Roses", lib:"nature", desc:"Classic and full, deep red."},
+    {id:"blossom", name:"Blossom", lib:"nature", desc:"Light, sweet spring flowers."},
+    {id:"lavender", name:"Lavender", lib:"nature", desc:"Soft and floral, the classic calm-down scent."},
+    {id:"pine-resin", name:"Pine Resin", lib:"nature", desc:"Sharp sap and cold forest air."},
+    {id:"rosemary", name:"Rosemary", lib:"nature", desc:"Herbal and sharp, a little peppery."},
+    {id:"jasmine", name:"Jasmine", lib:"nature", desc:"Heady and sweet after dark."},
+    {id:"violets", name:"Violets", lib:"nature", desc:"Powdery and delicate."},
+    // Food Smells
+    {id:"strawberries", name:"Strawberries", lib:"food", desc:"Sweet and ripe, straight off the vine."},
+    {id:"citrics", name:"Citrics", lib:"food", desc:"Bright citrus zest, sharp and waking."},
+    {id:"apples", name:"Apples", lib:"food", desc:"Crisp and a little tart."},
+    {id:"blueberries", name:"Blueberries", lib:"food", desc:"Sweet, dark, and slightly tangy."},
+    {id:"coconut", name:"Coconut", lib:"food", desc:"Sweet and creamy, straight off the beach."},
+    {id:"bananas", name:"Bananas", lib:"food", desc:"Ripe and sugary."},
+    {id:"cherries", name:"Cherries", lib:"food", desc:"Dark, sweet, faintly almond-like."},
+    {id:"passion-fruit", name:"Passion Fruit", lib:"food", desc:"Tart and tropical."},
+    {id:"peaches", name:"Peaches", lib:"food", desc:"Soft, sweet, and sun-warmed."},
+    {id:"cola-drink", name:"Cola Drink", lib:"food", desc:"Caramel, spice, and fizz."},
+    {id:"beer", name:"Beer", lib:"food", desc:"Malt and hops, fresh-poured."},
+    {id:"green-tea", name:"Green Tea", lib:"food", desc:"Grassy and faintly bitter, steeped fresh."},
+    {id:"chocolate", name:"Chocolate", lib:"food", desc:"Rich and dark, straight from the bar."},
+    {id:"honey", name:"Honey", lib:"food", desc:"Warm, floral, and golden."},
+    {id:"pastries", name:"Pastries", lib:"food", desc:"Butter and sugar, fresh from the oven."},
+    {id:"candy-floss", name:"Candy Floss", lib:"food", desc:"Spun sugar at the fair."},
+    {id:"lollipop", name:"Lollipop", lib:"food", desc:"Sweet and artificial, in the best way."},
+    {id:"almonds", name:"Almonds", lib:"food", desc:"Toasted and faintly sweet."},
+    {id:"peppermint", name:"Peppermint", lib:"food", desc:"Cool and sharp."},
+    {id:"vanilla", name:"Vanilla", lib:"food", desc:"Warm, sweet, and a little like baking."},
+    {id:"ginger", name:"Ginger", lib:"food", desc:"Warm and peppery."},
+    {id:"cilantro", name:"Cilantro", lib:"food", desc:"Green and citrus-sharp."},
+    {id:"cinnamon", name:"Cinnamon", lib:"food", desc:"Warm and woody-sweet."},
+    {id:"butter", name:"Butter", lib:"food", desc:"Rich and creamy, melting."},
+    {id:"bread", name:"Bread", lib:"food", desc:"Warm crust, fresh from the oven."},
+    {id:"cheese", name:"Cheese", lib:"food", desc:"Sharp and pungent, well-aged."},
+    {id:"bacon", name:"Bacon", lib:"food", desc:"Smoky and salty, straight off the pan."},
+    {id:"patatas-bravas", name:"Patatas Bravas", lib:"food", desc:"Fried potato and smoked paprika."},
+    {id:"peas", name:"Peas", lib:"food", desc:"Green and fresh, straight from the pod."},
+    {id:"smoked-sausages", name:"Smoked Sausages", lib:"food", desc:"Char and smoke off the grill."},
+    {id:"anchovies", name:"Anchovies", lib:"food", desc:"Briny and intensely savory."},
+    // Ambiance & Fragrance
+    {id:"tropical-beach", name:"Tropical Beach", lib:"ambiance", desc:"Salt air, sunscreen, and warm sand."},
+    {id:"leather", name:"Leather", lib:"ambiance", desc:"Rich and worn, like a saddle."},
+    {id:"women-fragrance", name:"Women's Fragrance", lib:"ambiance", desc:"A soft floral-and-musk perfume base."},
+    {id:"man-perfume", name:"Men's Perfume", lib:"ambiance", desc:"A sharp woody-and-citrus cologne base."},
+    {id:"spa", name:"Spa", lib:"ambiance", desc:"Warm steam and quiet."},
+    {id:"incense", name:"Incense", lib:"ambiance", desc:"Smoky resin, slow-burning."},
+    {id:"paint", name:"Paint", lib:"ambiance", desc:"Fresh and solvent-sharp."},
+    {id:"soap", name:"Soap", lib:"ambiance", desc:"Clean and faintly floral."},
+    // Action Scene Smells
+    {id:"blood", name:"Blood", lib:"action", desc:"Metallic and mineral — the smell combat-medic trainees learn to recognize fast."},
+    {id:"fire", name:"Fire & Explosions", lib:"action", desc:"Smoke and combustion, sharp enough to cut through panic."},
+    {id:"gunfire", name:"Gunfire & Gunpowder", lib:"action", desc:"Spent gunpowder hanging in still air after the shot."},
+    {id:"rubber", name:"Burnt Rubber", lib:"action", desc:"Scorched tire tread — the smell of a skid that didn't stop in time."},
+    {id:"plastic", name:"Burnt Plastic", lib:"action", desc:"Melting synthetics, thin and acrid."},
+    {id:"car-oil", name:"Burnt Car Oil", lib:"action", desc:"Overheated motor oil, heavy and metallic."},
+    {id:"gasoline", name:"Gasoline", lib:"action", desc:"A fuel spill's sharp, sweet sting."},
+    {id:"diesel", name:"Diesel", lib:"action", desc:"Dense and oily, thicker than gasoline."},
+    {id:"aviation", name:"Aviation Gas", lib:"action", desc:"Jet fuel drifting across hot tarmac."},
+    {id:"volcano", name:"Volcano", lib:"action", desc:"Sulfur and ash from deep underground."}
   ];
 
-  // Maps a tactical port number to its scentLibrary key, so clicking a port
-  // or firing a scenario also drives the atmosphere stage below.
-  var portSlug = {1:"blood",2:"fire",3:"gunfire",4:"rubber",5:"plastic",6:"car-oil",7:"gasoline",8:"diesel",9:"aviation",10:"volcano"};
+  var SCENT_BY_ID = {};
+  var SCENTS_BY_LIB = { nature:[], food:[], ambiance:[], action:[] };
+  SCENTS.forEach(function(s){ SCENT_BY_ID[s.id] = s; SCENTS_BY_LIB[s.lib].push(s); });
 
-  // Background tint + foreground particle preset for every cartridge across
-  // both kits. bg is [inner, outer] for a radial gradient; each particle
-  // layer spawns on its own interval (ms) with size in px and speed in
-  // px/frame at 60fps.
-  var scentLibrary = {
-    blood:      { kit:"Tactical & Emergency Kit",     name:"Blood",             desc:"Metallic and mineral — the smell combat-medic trainees learn to recognize fast.",
-                  bg:["#4a1620","#17181c"], layers:[{shape:"droplet",color:"#c22f45",dir:"fall",speed:1.4,size:[4,7],rate:260}] },
-    fire:       { kit:"Tactical & Emergency Kit",     name:"Fire & Explosions", desc:"Smoke and combustion, sharp enough to cut through panic.",
-                  bg:["#4a2a12","#17181c"], layers:[{shape:"ember",color:"#ff8a3d",dir:"rise",speed:1.3,size:[2,4],rate:140}] },
-    gunfire:    { kit:"Tactical & Emergency Kit",     name:"Gunfire & Gunpowder", desc:"Spent gunpowder hanging in still air after the shot.",
-                  bg:["#38352e","#17181c"], layers:[{shape:"smoke",color:"#8f8b80",dir:"rise",speed:0.5,size:[8,14],rate:420},{shape:"ember",color:"#ffd24a",dir:"rise",speed:1.6,size:[1,2],rate:520}] },
-    rubber:     { kit:"Tactical & Emergency Kit",     name:"Burnt Rubber",      desc:"Scorched tire tread — the smell of a skid that didn't stop in time.",
-                  bg:["#2a2a2c","#17181c"], layers:[{shape:"smoke",color:"#2e2c2a",dir:"rise",speed:0.4,size:[10,18],rate:380}] },
-    plastic:    { kit:"Tactical & Emergency Kit",     name:"Burnt Plastic",     desc:"Melting synthetics, thin and acrid.",
-                  bg:["#33402a","#17181c"], layers:[{shape:"smoke",color:"#6d7a4d",dir:"rise",speed:0.45,size:[8,15],rate:400}] },
-    "car-oil":  { kit:"Tactical & Emergency Kit",     name:"Burnt Car Oil",     desc:"Overheated motor oil, heavy and metallic.",
-                  bg:["#201d1a","#17181c"], layers:[{shape:"droplet",color:"#141210",dir:"fall",speed:0.7,size:[5,9],rate:420}] },
-    gasoline:   { kit:"Tactical & Emergency Kit",     name:"Gasoline",          desc:"A fuel spill's sharp, sweet sting.",
-                  bg:["#3a3320","#17181c"], layers:[{shape:"fleck",color:"#c9a23a",dir:"drift",speed:0.6,size:[3,5],rate:220,hueShift:true}] },
-    diesel:     { kit:"Tactical & Emergency Kit",     name:"Diesel",            desc:"Dense and oily, thicker than gasoline.",
-                  bg:["#23211d","#17181c"], layers:[{shape:"smoke",color:"#201e1a",dir:"rise",speed:0.35,size:[12,20],rate:460}] },
-    aviation:   { kit:"Tactical & Emergency Kit",     name:"Aviation Gas",      desc:"Jet fuel drifting across hot tarmac.",
-                  bg:["#223038","#17181c"], layers:[{shape:"smoke",color:"#cfe0e6",dir:"rise",speed:1.0,size:[5,9],rate:220}] },
-    volcano:    { kit:"Tactical & Emergency Kit",     name:"Volcano",           desc:"Sulfur and ash from deep underground.",
-                  bg:["#4a2412","#17181c"], layers:[{shape:"ember",color:"#ff6a2e",dir:"rise",speed:1.2,size:[2,4],rate:160},{shape:"fleck",color:"#4a4640",dir:"fall",speed:0.6,size:[3,5],rate:260}] },
+  var DEFAULT_LOADOUT = ["blood","fire","gunfire","rubber","plastic","car-oil","gasoline","diesel","aviation","volcano"];
+  var loadout = DEFAULT_LOADOUT.slice(); // index 0 = port 1 ... index 9 = port 10
 
-    lavender:     { kit:"Wellness & Aromatherapy Kit", name:"Lavender",         desc:"Soft and floral, the classic calm-down scent.",
-                    bg:["#34284a","#17181c"], layers:[{shape:"petal",color:"#9b7fd4",dir:"fall",speed:0.5,size:[4,7],rate:280}] },
-    "sea-breeze": { kit:"Wellness & Aromatherapy Kit", name:"Sea Breeze",       desc:"Salt air and cold water.",
-                    bg:["#1e3640","#17181c"], layers:[{shape:"droplet",color:"#7ec8d8",dir:"rise",speed:0.6,size:[3,5],rate:260}] },
-    pine:         { kit:"Wellness & Aromatherapy Kit", name:"Pine Forest",      desc:"Resin and cold forest air.",
-                    bg:["#1f3524","#17181c"], layers:[{shape:"leaf",color:"#3f7a52",dir:"fall",speed:0.55,size:[4,7],rate:300}] },
-    vanilla:      { kit:"Wellness & Aromatherapy Kit", name:"Vanilla",          desc:"Warm, sweet, and a little like baking.",
-                    bg:["#40331f","#17181c"], layers:[{shape:"smoke",color:"#e8cfa0",dir:"rise",speed:0.4,size:[8,14],rate:380}] },
-    "fresh-linen":{ kit:"Wellness & Aromatherapy Kit", name:"Fresh Linen",      desc:"Clean cotton, just off the line.",
-                    bg:["#33322c","#17181c"], layers:[{shape:"fleck",color:"#f2f0ea",dir:"drift",speed:0.4,size:[3,5],rate:320}] },
-    citrus:       { kit:"Wellness & Aromatherapy Kit", name:"Citrus Grove",     desc:"Bright citrus zest, sharp and waking.",
-                    bg:["#45330f","#17181c"], layers:[{shape:"fleck",color:"#f2a53c",dir:"fall",speed:0.5,size:[3,5],rate:280}] },
-    "green-tea":  { kit:"Wellness & Aromatherapy Kit", name:"Green Tea",        desc:"Grassy and faintly bitter, steeped fresh.",
-                    bg:["#2c3620","#17181c"], layers:[{shape:"leaf",color:"#8fae6a",dir:"fall",speed:0.5,size:[4,6],rate:300}] },
-    sandalwood:   { kit:"Wellness & Aromatherapy Kit", name:"Sandalwood",       desc:"Warm, woody, and a little smoky.",
-                    bg:["#3a2d1e","#17181c"], layers:[{shape:"fleck",color:"#b98a5a",dir:"drift",speed:0.35,size:[2,4],rate:340}] },
-    "rain-earth": { kit:"Wellness & Aromatherapy Kit", name:"Rain-Fresh Earth", desc:"Petrichor — the smell of rain hitting dry ground.",
-                    bg:["#24303a","#17181c"], layers:[{shape:"droplet",color:"#6b7f8a",dir:"fall",speed:1.8,size:[3,5],rate:180}] },
-    chamomile:    { kit:"Wellness & Aromatherapy Kit", name:"Chamomile",        desc:"Honeyed and herbal, like the tea.",
-                    bg:["#3f3a1e","#17181c"], layers:[{shape:"petal",color:"#e8d878",dir:"fall",speed:0.5,size:[4,6],rate:300}] }
+  var SCENARIOS = [
+    { id:"vehicle-collision", name:"Vehicle Collision", desc:"Traffic-collision response: injury, scorched tires, and a fuel spill at the scene.", need:["blood","rubber","gasoline"] },
+    { id:"structure-fire", name:"Structure Fire", desc:"A building fire with melting synthetics and scorched fittings.", need:["fire","plastic","rubber"] },
+    { id:"active-shooter", name:"Active Shooter Response", desc:"Tactical entry training: spent gunpowder over a casualty.", need:["gunfire","blood"] },
+    { id:"volcanic-eruption", name:"Volcanic Eruption", desc:"Geoscience and natural-disaster training: sulfurous gas and combustion.", need:["volcano","fire"] },
+    { id:"aircraft-incident", name:"Aircraft Incident", desc:"Airport emergency response: aviation fuel, fire, and scorched rubber on the tarmac.", need:["aviation","fire","rubber"] },
+    { id:"fuel-depot-spill", name:"Fuel Depot Spill", desc:"Industrial-site hazmat training: three fuel types pooling together.", need:["gasoline","diesel","car-oil"] },
+    { id:"forest-walk", name:"Forest Walk", desc:"A quiet trail through resin and damp wood.", need:["jungle","pine-resin","wood-logs"] },
+    { id:"spring-garden", name:"Spring Garden", desc:"Fresh-cut grass under blooming roses.", need:["roses","blossom","fresh-grass"] },
+    { id:"bakery-morning", name:"Bakery Morning", desc:"Warm bread and butter, fresh from the oven.", need:["bread","butter","pastries"] },
+    { id:"tropical-fruit-stand", name:"Tropical Fruit Stand", desc:"A market stall of ripe passion fruit, coconut, and banana.", need:["passion-fruit","coconut","bananas"] },
+    { id:"spa-retreat", name:"Spa Retreat", desc:"Incense, soap, and quiet warmth.", need:["spa","incense","soap"] },
+    { id:"beach-getaway", name:"Beach Getaway", desc:"Salt air, sunscreen, and warm sand.", need:["tropical-beach","coconut"] }
+  ];
+
+  // ============================================================
+  // Atmosphere presets: library defaults + per-scent overrides,
+  // built from the 6 shared particle shapes (petal/leaf/droplet/
+  // fleck/ember/smoke) rather than 61 bespoke ones.
+  // ============================================================
+  var LIB_DEFAULT_LAYER = {
+    nature:   {shape:"leaf",   dir:"fall", speed:0.5, size:[4,7],  rate:300, color:"#3f7a52"},
+    food:     {shape:"fleck",  dir:"fall", speed:0.5, size:[3,5],  rate:300, color:"#c9793a"},
+    ambiance: {shape:"smoke",  dir:"rise", speed:0.4, size:[8,14], rate:380, color:"#7d5fa6"},
+    action:   {shape:"smoke",  dir:"rise", speed:0.4, size:[8,14], rate:380, color:"#c4453a"}
   };
 
-  var STAGGER_MS = 550;
+  var SCENT_OVERRIDES = {
+    "rain-wet-ground": {shape:"droplet", color:"#6b7f8a", dir:"fall", speed:1.8, size:[3,5], rate:180},
+    roses: {shape:"petal", color:"#c46a7a"},
+    blossom: {shape:"petal", color:"#d98fae"},
+    lavender: {shape:"petal", color:"#9b7fd4"},
+    jasmine: {shape:"petal", color:"#c7a83f"},
+    violets: {shape:"petal", color:"#6f5f9e"},
 
-  var portButtons = document.querySelectorAll('.port');
+    "cola-drink": {shape:"droplet", color:"#3c2415", dir:"fall", speed:0.6},
+    beer: {shape:"droplet", color:"#c68f2e", dir:"fall", speed:0.5},
+    honey: {shape:"droplet", color:"#c68f2e", dir:"fall", speed:0.3},
+    chocolate: {shape:"droplet", color:"#4a2e1a", dir:"fall", speed:0.6},
+    coconut: {shape:"fleck", color:"#c9c2ad"},
+    "green-tea": {shape:"leaf", color:"#8fae6a"},
+
+    "tropical-beach": {shape:"droplet", color:"#4fb3c9", dir:"rise", speed:0.6, size:[3,5], rate:260},
+    incense: {shape:"smoke", color:"#b57ec4", dir:"rise", speed:0.5},
+    paint: {shape:"fleck", color:"#7d5fa6", dir:"drift", hueShift:true},
+    soap: {shape:"fleck", color:"#8fb3c2"},
+    spa: {shape:"petal", color:"#6fb89b"},
+
+    blood: {shape:"droplet", color:"#c22f45", dir:"fall", speed:1.4, size:[4,7], rate:260},
+    fire: {shape:"ember", color:"#ff8a3d", dir:"rise", speed:1.3, size:[2,4], rate:140},
+    gunfire: {layers:[
+      {shape:"smoke", color:"#8f8b80", dir:"rise", speed:0.5, size:[8,14], rate:420},
+      {shape:"ember", color:"#ffd24a", dir:"rise", speed:1.6, size:[1,2], rate:520}
+    ]},
+    rubber: {shape:"smoke", color:"#2e2c2a", dir:"rise", speed:0.4, size:[10,18], rate:380},
+    plastic: {shape:"smoke", color:"#6d7a4d", dir:"rise", speed:0.45, size:[8,15], rate:400},
+    "car-oil": {shape:"droplet", color:"#141210", dir:"fall", speed:0.7, size:[5,9], rate:420},
+    gasoline: {shape:"fleck", color:"#c9a23a", dir:"drift", speed:0.6, size:[3,5], rate:220, hueShift:true},
+    diesel: {shape:"smoke", color:"#201e1a", dir:"rise", speed:0.35, size:[12,20], rate:460},
+    aviation: {shape:"smoke", color:"#8fb8c9", dir:"rise", speed:1.0, size:[5,9], rate:220},
+    volcano: {layers:[
+      {shape:"ember", color:"#ff6a2e", dir:"rise", speed:1.2, size:[2,4], rate:160},
+      {shape:"fleck", color:"#4a4640", dir:"fall", speed:0.6, size:[3,5], rate:260}
+    ]}
+  };
+
+  var SCENT_PRESETS = {};
+  SCENTS.forEach(function(s){
+    var lib = LIBRARIES[s.lib];
+    var override = SCENT_OVERRIDES[s.id] || {};
+    var layers = override.layers || [Object.assign({}, LIB_DEFAULT_LAYER[s.lib], override)];
+    SCENT_PRESETS[s.id] = { kit: lib.name, name: s.name, desc: s.desc, bg: [lib.tint, "#ffffff"], layers: layers };
+  });
+
+  // ============================================================
+  // Loadout configurator: two cascading selects per port.
+  // ============================================================
+  var loadoutGrid = document.getElementById("loadoutGrid");
+
+  function libIconSvg(libId){
+    return '<svg viewBox="0 0 24 24">' + LIB_ICONS[libId] + '</svg>';
+  }
+
+  function scentOptionsHtml(libId, selectedId){
+    return SCENTS_BY_LIB[libId].map(function(s){
+      return '<option value="' + s.id + '"' + (s.id === selectedId ? ' selected' : '') + '>' + s.name + '</option>';
+    }).join('');
+  }
+
+  function libOptionsHtml(selectedId){
+    return Object.keys(LIBRARIES).map(function(id){
+      return '<option value="' + id + '"' + (id === selectedId ? ' selected' : '') + '>' + LIBRARIES[id].name + '</option>';
+    }).join('');
+  }
+
+  function renderLoadoutGrid(){
+    loadoutGrid.innerHTML = loadout.map(function(scentId, i){
+      var port = i + 1;
+      var scent = SCENT_BY_ID[scentId];
+      var lib = LIBRARIES[scent.lib];
+      return '<div class="loadout-row">' +
+        '<span class="loadout-port">P' + String(port).padStart(2, '0') + '</span>' +
+        '<span class="loadout-icon" style="color:' + lib.color + '">' + libIconSvg(scent.lib) + '</span>' +
+        '<select class="lib-select" data-port="' + port + '" style="--tag-color:' + lib.color + ';--tag-tint:' + lib.tint + '">' + libOptionsHtml(scent.lib) + '</select>' +
+        '<select class="scent-select" data-port="' + port + '">' + scentOptionsHtml(scent.lib, scentId) + '</select>' +
+      '</div>';
+    }).join('');
+
+    loadoutGrid.querySelectorAll('.lib-select').forEach(function(sel){
+      sel.addEventListener('change', function(){
+        var port = Number(sel.getAttribute('data-port'));
+        var newLib = sel.value;
+        loadout[port - 1] = SCENTS_BY_LIB[newLib][0].id;
+        onLoadoutChanged();
+      });
+    });
+    loadoutGrid.querySelectorAll('.scent-select').forEach(function(sel){
+      sel.addEventListener('change', function(){
+        var port = Number(sel.getAttribute('data-port'));
+        loadout[port - 1] = sel.value;
+        onLoadoutChanged();
+      });
+    });
+  }
+
+  function onLoadoutChanged(){
+    renderLoadoutGrid();
+    renderPorts();
+    renderScenarioGrid();
+    updateNameplateKit();
+    clearPending();
+    clearActivePorts();
+    nowPlaying.innerHTML = mode === 'single'
+      ? '<p class="np-hint">Click a port above to preview a scent and see the command that triggers it on the real device.</p>'
+      : '<p class="np-hint">Pick a scenario below to see which ports it fires, in sequence, and the commands behind each one.</p>';
+  }
+
+  function updateNameplateKit(){
+    var libsPresent = {};
+    loadout.forEach(function(id){ libsPresent[SCENT_BY_ID[id].lib] = true; });
+    var names = Object.keys(libsPresent).map(function(id){ return LIBRARIES[id].name.replace(' Smells', '').replace(' & Fragrance', ''); });
+    document.getElementById('nameplateKit').textContent = 'Kit: ' + names.join(' + ');
+  }
+
+  // ============================================================
+  // Port grid (device visualization), built from the current loadout.
+  // ============================================================
+  var STAGGER_MS = 550;
   var portsEl = document.getElementById('ports');
   var nowPlaying = document.getElementById('nowPlaying');
   var fanBlades = document.getElementById('fanBlades');
@@ -644,12 +784,50 @@ socket.send(encodeCommand({ port: 2, intensity: 150, fanMs: 3000 }), DEVICE_PORT
   var scenariosPanel = document.getElementById('scenariosPanel');
   var mode = 'single';
   var pendingTimers = [];
+  var portButtons = [];
 
   function padCommand(port, intensity, fanMs){
     var p = String(port).padStart(2,'0');
     var i = String(intensity).padStart(4,'0');
     var f = String(fanMs).padStart(5,'0');
     return 'OUT,' + p + ',' + i + ',1,' + f + ',1000';
+  }
+
+  function renderPorts(){
+    portsEl.innerHTML = loadout.map(function(scentId, i){
+      var port = i + 1;
+      var scent = SCENT_BY_ID[scentId];
+      var lib = LIBRARIES[scent.lib];
+      return '<button class="port" data-port="' + port + '" aria-pressed="false" aria-label="Port ' + port + ': ' + scent.name + '">' +
+        '<span class="port-num" style="--port-color:' + lib.color + '"><svg class="port-icon" viewBox="0 0 24 24">' + LIB_ICONS[scent.lib] + '</svg></span>' +
+        '<span class="port-cap">' + scent.name + '</span>' +
+      '</button>';
+    }).join('');
+
+    portButtons = portsEl.querySelectorAll('.port');
+    portButtons.forEach(function(port){
+      port.addEventListener('click', function(){
+        if(mode !== 'single') return;
+        var n = port.getAttribute('data-port');
+        clearPending();
+        clearActivePorts();
+        activatePort(n);
+        spinFan();
+
+        var scent = SCENT_BY_ID[loadout[n - 1]];
+        nowPlaying.innerHTML =
+          '<p class="np-kicker">Port ' + n + ' · ' + LIBRARIES[scent.lib].name + '</p>' +
+          '<h3>' + scent.name + '</h3>' +
+          '<p class="np-desc">' + scent.desc + '</p>' +
+          '<code class="np-cmd fired">' + padCommand(n, 100, 2000) + '</code>';
+
+        if(window.__setAtmosphereScent) window.__setAtmosphereScent(scent.id);
+        bridgePost('/api/activate', { port: Number(n), intensity: 100, fanMs: 2000 });
+      });
+    });
+
+    portsEl.classList.toggle('ports--readonly', mode !== 'single');
+    portButtons.forEach(function(p){ p.tabIndex = mode === 'single' ? 0 : -1; });
   }
 
   function clearPending(){
@@ -679,35 +857,66 @@ socket.send(encodeCommand({ port: 2, intensity: 150, fanMs: 3000 }), DEVICE_PORT
     port.setAttribute('aria-pressed','true');
   }
 
+  // ============================================================
+  // Scenarios: ready (every needed scent is loaded) sort first;
+  // the rest show what to load to unlock them.
+  // ============================================================
+  function loadoutPortsFor(scentId){
+    var ports = [];
+    loadout.forEach(function(id, i){ if(id === scentId) ports.push(i + 1); });
+    return ports;
+  }
+
+  function evaluateScenario(scenario){
+    var missing = scenario.need.filter(function(id){ return loadout.indexOf(id) === -1; });
+    return { scenario: scenario, missing: missing, ready: missing.length === 0 };
+  }
+
   function renderScenarioGrid(){
-    scenarioGrid.innerHTML = scenarios.map(function(s){
-      var combo = s.ports.map(function(p){ return scentCatalog[p].name; }).join(' + ');
-      return '<button class="scenario-card" type="button" data-scenario="' + s.id + '">' +
+    var evaluated = SCENARIOS.map(evaluateScenario);
+    evaluated.sort(function(a, b){
+      if(a.ready !== b.ready) return a.ready ? -1 : 1;
+      return a.missing.length - b.missing.length;
+    });
+
+    scenarioGrid.innerHTML = evaluated.map(function(e){
+      var s = e.scenario;
+      var comboNames = s.need.map(function(id){ return SCENT_BY_ID[id].name; }).join(' + ');
+      var statusHtml = e.ready
+        ? '<span class="scenario-status ready">Ready</span>'
+        : '<span class="scenario-status locked-status">Needs ' + e.missing.length + ' more</span>';
+      var comboLine = e.ready
+        ? '<span class="scenario-combo">' + comboNames + '</span>'
+        : '<span class="scenario-combo">' + comboNames + '</span><span class="scenario-missing">Load: ' + e.missing.map(function(id){ return SCENT_BY_ID[id].name; }).join(', ') + '</span>';
+      return '<button class="scenario-card' + (e.ready ? '' : ' locked') + '" type="button" data-scenario="' + s.id + '"' + (e.ready ? '' : ' aria-disabled="true"') + '>' +
+        statusHtml +
         '<span class="scenario-name">' + s.name + '</span>' +
-        '<span class="scenario-combo">' + combo + '</span>' +
+        comboLine +
         '<span class="scenario-desc">' + s.desc + '</span>' +
       '</button>';
     }).join('');
 
-    scenarioGrid.querySelectorAll('.scenario-card').forEach(function(card){
+    scenarioGrid.querySelectorAll('.scenario-card:not(.locked)').forEach(function(card){
       card.addEventListener('click', function(){ fireScenario(card.getAttribute('data-scenario'), card); });
     });
   }
 
   function fireScenario(id, cardEl){
-    var scenario = scenarios.find(function(s){ return s.id === id; });
-    if(!scenario) return;
+    var evalResult = evaluateScenario(SCENARIOS.find(function(s){ return s.id === id; }));
+    if(!evalResult.ready) return;
+    var scenario = evalResult.scenario;
+    var ports = scenario.need.map(function(scentId){ return loadoutPortsFor(scentId)[0]; });
 
     clearPending();
     clearActivePorts();
     scenarioGrid.querySelectorAll('.scenario-card').forEach(function(c){ c.classList.remove('firing'); });
     cardEl.classList.add('firing');
     spinFan();
-    bridgePost('/api/scenario', { id: scenario.id, intensity: 100, fanMs: 2000, staggerMs: STAGGER_MS });
 
-    var lines = scenario.ports.map(function(p){
+    var lines = ports.map(function(p){
+      var scent = SCENT_BY_ID[loadout[p - 1]];
       return '<code class="np-cmd" data-port="' + p + '">' + padCommand(p, 100, 2000) +
-        '<span class="np-cmd-label">' + scentCatalog[p].name + '</span></code>';
+        '<span class="np-cmd-label">' + scent.name + '</span></code>';
     }).join('');
 
     nowPlaying.innerHTML =
@@ -716,12 +925,14 @@ socket.send(encodeCommand({ port: 2, intensity: 150, fanMs: 3000 }), DEVICE_PORT
       '<p class="np-desc">' + scenario.desc + '</p>' +
       lines;
 
-    scenario.ports.forEach(function(p, i){
+    ports.forEach(function(p, i){
       var t = setTimeout(function(){
         activatePort(p);
         var line = nowPlaying.querySelector('.np-cmd[data-port="' + p + '"]');
         if(line) line.classList.add('fired');
-        if(window.__setAtmosphereScent) window.__setAtmosphereScent(portSlug[p]);
+        var scent = SCENT_BY_ID[loadout[p - 1]];
+        if(window.__setAtmosphereScent) window.__setAtmosphereScent(scent.id);
+        bridgePost('/api/activate', { port: p, intensity: 100, fanMs: 2000 });
       }, i * STAGGER_MS);
       pendingTimers.push(t);
     });
@@ -746,36 +957,19 @@ socket.send(encodeCommand({ port: 2, intensity: 150, fanMs: 3000 }), DEVICE_PORT
       : '<p class="np-hint">Pick a scenario below to see which ports it fires, in sequence, and the commands behind each one.</p>';
   }
 
-  portButtons.forEach(function(port){
-    port.addEventListener('click', function(){
-      if(mode !== 'single') return;
-      var n = port.getAttribute('data-port');
-      clearPending();
-      clearActivePorts();
-      activatePort(n);
-      spinFan();
-
-      var data = scentCatalog[n];
-      nowPlaying.innerHTML =
-        '<p class="np-kicker">Port ' + n + '</p>' +
-        '<h3>' + data.name + '</h3>' +
-        '<p class="np-desc">' + data.desc + '</p>' +
-        '<code class="np-cmd fired">' + padCommand(n, 100, 2000) + '</code>';
-
-      if(window.__setAtmosphereScent) window.__setAtmosphereScent(portSlug[n]);
-      bridgePost('/api/activate', { port: Number(n), intensity: 100, fanMs: 2000 });
-    });
-  });
-
   document.getElementById('tabSingle').addEventListener('click', function(){ setMode('single'); });
   document.getElementById('tabScenarios').addEventListener('click', function(){ setMode('scenarios'); });
 
+  renderLoadoutGrid();
+  renderPorts();
   renderScenarioGrid();
+  updateNameplateKit();
   setMode('single');
 
-  // --- Bridge: optional real activation via a local HTTP-to-UDP server -
-  // (see server/bridge-server.js). Off by default — a page shouldn't spray
-  // real cartridges just because someone clicked around a demo.
+  // ============================================================
+  // Bridge: optional real activation via a local HTTP-to-UDP server
+  // (see server/bridge-server.js). Off by default.
+  // ============================================================
   var bridgeEnabled = document.getElementById('bridgeEnabled');
   var bridgeUrlInput = document.getElementById('bridgeUrl');
   var bridgeStatus = document.getElementById('bridgeStatus');
@@ -798,11 +992,6 @@ socket.send(encodeCommand({ port: 2, intensity: 150, fanMs: 3000 }), DEVICE_PORT
       .catch(function(){ setBridgeStatus('Not reachable at ' + bridgeBase(), 'error'); });
   }
 
-  function describeSent(sent){
-    if(Array.isArray(sent)) return sent.length + ' command' + (sent.length === 1 ? '' : 's') + ' sent';
-    return sent || 'sent';
-  }
-
   function bridgePost(path, payload){
     if(!bridgeEnabled.checked) return;
     fetch(bridgeBase() + path, {
@@ -812,7 +1001,7 @@ socket.send(encodeCommand({ port: 2, intensity: 150, fanMs: 3000 }), DEVICE_PORT
     }).then(function(r){
       return r.json().then(function(data){ return { httpOk: r.ok, data: data }; });
     }).then(function(res){
-      if(res.httpOk && res.data.ok) setBridgeStatus('Sent: ' + describeSent(res.data.sent), 'ok');
+      if(res.httpOk && res.data.ok) setBridgeStatus('Sent: ' + res.data.sent, 'ok');
       else setBridgeStatus('Bridge error: ' + (res.data.error || 'unknown'), 'error');
     }).catch(function(){
       setBridgeStatus('Not reachable at ' + bridgeBase(), 'error');
@@ -825,7 +1014,9 @@ socket.send(encodeCommand({ port: 2, intensity: 150, fanMs: 3000 }), DEVICE_PORT
   });
   bridgeUrlInput.addEventListener('change', checkBridge);
 
-  // --- Scent Atmosphere: canvas particle preview -----------------------
+  // ============================================================
+  // Scent Atmosphere: canvas particle preview
+  // ============================================================
   (function(){
     var stage = document.getElementById('atmosphereStage');
     var canvas = document.getElementById('atmosphereCanvas');
@@ -837,6 +1028,13 @@ socket.send(encodeCommand({ port: 2, intensity: 150, fanMs: 3000 }), DEVICE_PORT
     var stageName = document.getElementById('stageName');
     var stageDesc = document.getElementById('stageDesc');
     var reduced = window.matchMedia('(prefers-reduced-motion: reduce)').matches;
+
+    select.innerHTML = Object.keys(LIBRARIES).map(function(libId){
+      var options = SCENTS_BY_LIB[libId].map(function(s){
+        return '<option value="' + s.id + '"' + (s.id === 'lavender' ? ' selected' : '') + '>' + s.name + '</option>';
+      }).join('');
+      return '<optgroup label="' + LIBRARIES[libId].name + '">' + options + '</optgroup>';
+    }).join('');
 
     var particles = [];
     var current = null;
@@ -912,7 +1110,7 @@ socket.send(encodeCommand({ port: 2, intensity: 150, fanMs: 3000 }), DEVICE_PORT
     }
 
     function setScent(key){
-      var preset = scentLibrary[key];
+      var preset = SCENT_PRESETS[key];
       if(!preset) return;
       current = preset;
       particles = [];
@@ -940,7 +1138,7 @@ socket.send(encodeCommand({ port: 2, intensity: 150, fanMs: 3000 }), DEVICE_PORT
         for(var i = 0; i < 7; i++){
           var p = spawnParticle(layer);
           p.life = p.maxLife * rand(0.2, 0.7);
-          drawParticle(p, 0.7);
+          drawParticle(p, 0.75);
         }
       });
     }
@@ -968,7 +1166,7 @@ socket.send(encodeCommand({ port: 2, intensity: 150, fanMs: 3000 }), DEVICE_PORT
         p.x += p.vx * step + Math.sin(p.life / 500 * p.sway + p.swayPhase) * 0.3;
         p.y += p.vy * step;
         p.rot += p.rotSpeed * step;
-        if(p.hueShift) p.color = 'hsl(' + (40 + Math.sin(p.life * 0.004) * 30) + ',72%,58%)';
+        if(p.hueShift) p.color = 'hsl(' + (40 + Math.sin(p.life * 0.004) * 30) + ',72%,50%)';
 
         var ratio = p.life / p.maxLife;
         var alpha = ratio < 0.15 ? ratio / 0.15 : (ratio > 0.8 ? (1 - ratio) / 0.2 : 1);
@@ -985,7 +1183,7 @@ socket.send(encodeCommand({ port: 2, intensity: 150, fanMs: 3000 }), DEVICE_PORT
     select.addEventListener('change', function(){ setScent(this.value); });
 
     resize();
-    setScent(select.value);
+    setScent('lavender');
     if(reduced){
       renderStillFrame();
     } else {

@@ -5,17 +5,31 @@ plus a real, tested Node.js integration for its UDP control protocol.
 
 ## The page
 
-`index.html` is a standalone page — open it in a browser. It previews all 10
-cartridges of the "Emergency & Tactical Training" kit and shows the exact
-device command each one sends, per the Olorama user guide's "Activation via
-API" section. A **Scenarios** tab combines multiple ports for situations
-where more than one scent would plausibly show up together — a vehicle
-collision (blood + burnt rubber + gasoline), a volcanic eruption (volcano +
-fire), and four others — firing them in the staggered sequence the CLI below
-actually sends. The page can't open a raw UDP socket itself — no browser
-can — but turning on **Send to real device via Bridge** in the console makes
-it send real commands through the bridge server below instead of only
-previewing them.
+`index.html` is a standalone page — open it in a browser.
+
+**Load Your Cartridges** is the actual inventory model: two cascading
+dropdowns per physical port (library, then scent within it) across the real
+catalog of 61 cartridges in 4 libraries — Nature Smells, Food Smells,
+Ambiance & Fragrance, and Action Scene Smells (the original 10 tactical
+scents). Each library has its own icon and color, used consistently for the
+port grid, the configurator tags, and the atmosphere picker — icons
+represent the library, not the individual scent, so a new scent in an
+existing library needs no new artwork.
+
+The port grid, the **Scenarios** tab, and the **Scent Atmosphere** preview
+all follow whatever you've loaded. Scenarios need 2-3 specific scents
+present somewhere in your 10 ports (e.g. Vehicle Collision needs Blood +
+Burnt Rubber + Gasoline); the grid sorts ones you can fire right now first
+and shows exactly what to load to unlock the rest. Firing one resolves each
+needed scent to its current port and fires them in a staggered sequence.
+
+The page can't open a raw UDP socket itself — no browser can — but turning
+on **Send to real device via Bridge** in the console makes it send real
+commands through the bridge server below instead of only previewing them.
+
+The page's color accent (`--brand` in the CSS) is a placeholder pending the
+real DGA brand color(s) — everything else (library colors, layout) is
+independent of it.
 
 ## The tools
 
@@ -27,10 +41,13 @@ OUT,[port 01-10],[intensity 0100-0500],1,[fan time 1000-9000 ms],1000
 
 - `tools/protocol.js` — encodes/decodes that command, enforcing the
   documented ranges.
-- `tools/scent-catalog.js` — the 10 cartridge names for the currently loaded
-  kit, shared by the CLI, the simulator, and the page.
-- `tools/scenario-catalog.js` — multi-port training scenarios (which ports
-  fire together), mirrored by the page's Scenarios tab.
+- `tools/scent-catalog.js` — the 10 Action Scene cartridge names, shared by
+  the CLI and the simulator. The page's fuller library/scent picker (61
+  scents across 4 libraries) is a planning view independent of this — the
+  CLI and bridge only ever know "fire physical port N."
+- `tools/scenario-catalog.js` — the CLI's 6 built-in tactical scenarios
+  (which ports fire together). The page has 12, evaluated dynamically
+  against whatever you've loaded rather than fixed port numbers.
 - `tools/activate-scent.js` — CLI that sends one real UDP command, or a whole
   scenario as a staggered sequence of commands, to a generator.
 - `tools/scent-device-simulator.js` — a local UDP listener that decodes the
