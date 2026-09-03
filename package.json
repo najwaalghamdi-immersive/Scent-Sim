@@ -1,0 +1,13 @@
+{
+  "name": "scent-sim",
+  "version": "1.0.0",
+  "private": true,
+  "description": "Interactive concept page and Node.js UDP integration for the Olorama Professional 10-Scents Generator.",
+  "main": "tools/activate-scent.js",
+  "scripts": {
+    "test": "node --test",
+    "simulate": "node tools/scent-device-simulator.js",
+    "activate": "node tools/activate-scent.js"
+  },
+  "license": "UNLICENSED"
+}

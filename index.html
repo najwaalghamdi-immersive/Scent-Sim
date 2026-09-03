@@ -324,15 +324,10 @@
     <p class="format-note">The two fixed fields in the middle and at the end are internal — the manual notes they shouldn't be changed.</p>
 
     <h3 class="code-heading">Triggering It From Node.js</h3>
-    <p class="section-intro">The manual only shows C++ and Java samples. Here's the same UDP message in JavaScript, using Node's built-in dgram module. It runs as a small standalone script, not inside a browser — browsers can't open raw UDP sockets, which is also why the ports above only simulate the command rather than firing it.</p>
-    <div class="code-block"><code>const dgram = require('dgram');
-const socket = dgram.createSocket('udp4');
-
-const DEVICE_IP = '192.168.0.40';   // the generator's address on your network
-const DEVICE_PORT = 8000;           // confirm against your PacketSender export
-
-function activateScent(port, intensity = 100, fanMs = 2000) {
-  const message = [
+    <p class="section-intro">The manual only shows C++ and Java samples. This repo has the same UDP message in JavaScript as a real, tested tool — not just a snippet — using Node's built-in dgram module. It runs as a standalone script, not inside a browser — browsers can't open raw UDP sockets, which is also why the ports above only simulate the command rather than firing it.</p>
+    <div class="code-block"><code>// tools/protocol.js — the wire format from user guide section 3.2
+function encodeCommand({ port, intensity = 100, fanMs = 2000 }) {
+  return [
     'OUT',
     String(port).padStart(2, '0'),
     String(intensity).padStart(4, '0'),
@@ -340,15 +335,14 @@ function activateScent(port, intensity = 100, fanMs = 2000) {
     String(fanMs).padStart(5, '0'),
     '1000'
   ].join(',');
-
-  socket.send(message, DEVICE_PORT, DEVICE_IP, function (err) {
-    if (err) console.error('Send failed:', err);
-    else console.log('Sent:', message);
-  });
 }
 
-activateScent(2, 150, 3000); // Fire and Explosions, medium intensity, 3s</code></div>
-    <p class="code-note">The UDP port isn't printed as plain text in the guide — pull it from the PacketSender export file the manual links to, or confirm it with Olorama support.</p>
+// tools/activate-scent.js — sends it for real
+const socket = dgram.createSocket('udp4');
+socket.send(encodeCommand({ port: 2, intensity: 150, fanMs: 3000 }), DEVICE_PORT, DEVICE_IP);</code></div>
+    <p class="code-note">Run it: <code class="np-cmd" style="display:inline;padding:2px 6px;">node tools/activate-scent.js 2 --intensity 150 --fan-ms 3000</code></p>
+    <p class="code-note">The UDP port isn't printed as plain text in the guide — pull it from the PacketSender export file the manual links to, or confirm it with Olorama support. Set it with <code class="np-cmd" style="display:inline;padding:2px 6px;">--host</code>/<code class="np-cmd" style="display:inline;padding:2px 6px;">--port</code> or the <code class="np-cmd" style="display:inline;padding:2px 6px;">OLORAMA_HOST</code>/<code class="np-cmd" style="display:inline;padding:2px 6px;">OLORAMA_PORT</code> env vars.</p>
+    <p class="code-note">No physical generator on hand? <code class="np-cmd" style="display:inline;padding:2px 6px;">npm run simulate</code> starts <code class="np-cmd" style="display:inline;padding:2px 6px;">tools/scent-device-simulator.js</code>, a local UDP listener that decodes the same command and prints which cartridge and intensity it received — enough to develop and test the integration without owning the hardware. <code class="np-cmd" style="display:inline;padding:2px 6px;">npm test</code> runs the automated suite, which sends real UDP packets to that simulator and checks all 10 ports decode correctly.</p>
   </section>
 
   <footer>
