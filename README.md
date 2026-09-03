@@ -27,9 +27,20 @@ The page can't open a raw UDP socket itself — no browser can — but turning
 on **Send to real device via Bridge** in the console makes it send real
 commands through the bridge server below instead of only previewing them.
 
-The page's color accent (`--brand` in the CSS) is a placeholder pending the
-real DGA brand color(s) — everything else (library colors, layout) is
-independent of it.
+**Branding** is pulled from `Digital_Saudi_Template_En.pptx` (the "Digital
+Saudi" theme in `ppt/theme/theme1.xml`, plus its logo asset), not guessed:
+navy `#271D6A` (their dominant text color, used 377× in the deck) as `--ink`,
+their accent1 sky-blue `#15AAFD` (used 57×, clearly their primary
+interactive color) as `--brand`, and their accent3 red `#B40000` as
+`--danger`. `--brand` and the Food library color are darkened from the raw
+theme hex (`#15AAFD`→`#027CC1`, `#FFA92B`→`#AB6600`) because the originals
+are under 2:1 contrast against white — too light to use as text or under
+white icons/labels; the undarkened tones only appear in the brand mark's
+gradient, extracted from the template's own logo. Action, Food, and
+Ambiance & Fragrance library colors are the brand's red/orange/purple;
+Nature stays a dedicated green since the palette has no brand green to draw
+on. The logo itself (`assets/digital-saudi-logo.png`, also inlined as a data
+URI in the page) is cropped from the template's own asset, not redrawn.
 
 ## The tools
 
