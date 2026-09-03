@@ -7,7 +7,8 @@
   "scripts": {
     "test": "node --test",
     "simulate": "node tools/scent-device-simulator.js",
-    "activate": "node tools/activate-scent.js"
+    "activate": "node tools/activate-scent.js",
+    "bridge": "node server/bridge-server.js"
   },
   "license": "UNLICENSED"
 }

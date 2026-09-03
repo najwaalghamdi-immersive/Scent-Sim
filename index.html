@@ -24,6 +24,7 @@
     --sage:#5fae93;
     --sage-soft:#8ec9b3;
     --sage-dim:#33473f;
+    --danger:#c4574a;
   }
   *{box-sizing:border-box;}
   html{-webkit-text-size-adjust:100%;}
@@ -97,6 +98,16 @@
   .tab:last-child{border-right:none;}
   .tab:hover{color:var(--paper);}
   .tab[aria-selected="true"]{background:var(--amber);color:#221607;font-weight:600;}
+
+  .bridge-panel{display:flex;align-items:center;gap:14px;flex-wrap:wrap;margin-top:16px;padding:12px 16px;background:var(--panel);border:1px solid var(--line);border-radius:3px;}
+  .bridge-toggle{display:flex;align-items:center;gap:8px;font-family:'IBM Plex Mono',monospace;font-size:0.8rem;color:var(--paper-soft);cursor:pointer;}
+  .bridge-toggle input{accent-color:var(--amber);width:15px;height:15px;cursor:pointer;}
+  .bridge-url{font-family:'IBM Plex Mono',monospace;font-size:0.78rem;color:var(--paper);background:var(--graphite);border:1px solid var(--line);border-radius:2px;padding:6px 9px;min-width:190px;flex:1;max-width:280px;}
+  .bridge-url:disabled{opacity:0.5;}
+  .bridge-status{font-family:'IBM Plex Mono',monospace;font-size:0.76rem;color:var(--paper-muted);}
+  .bridge-status.ok{color:var(--sage-soft);}
+  .bridge-status.error{color:var(--danger);}
+  .bridge-status.pending{color:var(--amber-soft);}
 
   .console-body{margin-top:22px;background:var(--panel);border:1px solid var(--line);border-radius:4px;padding:30px 26px;}
   .device-fan{display:block;margin:0 auto 22px;}
@@ -274,7 +285,16 @@
         <h2>The Generator</h2>
       </div>
     </div>
-    <p class="console-sub">Fire one cartridge at a time, or pick a scenario to see how a real training scene layers several scents in sequence. Either way this only previews the command — browsers can't open the raw UDP socket that would actually reach the device.</p>
+    <p class="console-sub">Fire one cartridge at a time, or pick a scenario to see how a real training scene layers several scents in sequence. On its own this only previews the command — browsers can't open the raw UDP socket that would reach the device — but turning on the bridge below sends it for real.</p>
+
+    <div class="bridge-panel">
+      <label class="bridge-toggle">
+        <input type="checkbox" id="bridgeEnabled">
+        <span>Send to real device via Bridge</span>
+      </label>
+      <input type="text" class="bridge-url" id="bridgeUrl" value="http://localhost:8787" disabled aria-label="Bridge server URL">
+      <span class="bridge-status" id="bridgeStatus">Off</span>
+    </div>
 
     <div class="tabs" role="tablist" aria-label="Activation mode">
       <button class="tab" role="tab" id="tabSingle" aria-selected="true" data-tab="single">Single Scents</button>
@@ -683,6 +703,7 @@ socket.send(encodeCommand({ port: 2, intensity: 150, fanMs: 3000 }), DEVICE_PORT
     scenarioGrid.querySelectorAll('.scenario-card').forEach(function(c){ c.classList.remove('firing'); });
     cardEl.classList.add('firing');
     spinFan();
+    bridgePost('/api/scenario', { id: scenario.id, intensity: 100, fanMs: 2000, staggerMs: STAGGER_MS });
 
     var lines = scenario.ports.map(function(p){
       return '<code class="np-cmd" data-port="' + p + '">' + padCommand(p, 100, 2000) +
@@ -742,6 +763,7 @@ socket.send(encodeCommand({ port: 2, intensity: 150, fanMs: 3000 }), DEVICE_PORT
         '<code class="np-cmd fired">' + padCommand(n, 100, 2000) + '</code>';
 
       if(window.__setAtmosphereScent) window.__setAtmosphereScent(portSlug[n]);
+      bridgePost('/api/activate', { port: Number(n), intensity: 100, fanMs: 2000 });
     });
   });
 
@@ -750,6 +772,58 @@ socket.send(encodeCommand({ port: 2, intensity: 150, fanMs: 3000 }), DEVICE_PORT
 
   renderScenarioGrid();
   setMode('single');
+
+  // --- Bridge: optional real activation via a local HTTP-to-UDP server -
+  // (see server/bridge-server.js). Off by default — a page shouldn't spray
+  // real cartridges just because someone clicked around a demo.
+  var bridgeEnabled = document.getElementById('bridgeEnabled');
+  var bridgeUrlInput = document.getElementById('bridgeUrl');
+  var bridgeStatus = document.getElementById('bridgeStatus');
+
+  function bridgeBase(){
+    return bridgeUrlInput.value.trim().replace(/\/+$/, '');
+  }
+
+  function setBridgeStatus(text, tone){
+    bridgeStatus.textContent = text;
+    bridgeStatus.className = 'bridge-status' + (tone ? ' ' + tone : '');
+  }
+
+  function checkBridge(){
+    if(!bridgeEnabled.checked){ setBridgeStatus('Off'); return; }
+    setBridgeStatus('Checking…', 'pending');
+    fetch(bridgeBase() + '/api/health')
+      .then(function(r){ if(!r.ok) throw new Error('bad response'); return r.json(); })
+      .then(function(data){ setBridgeStatus('Connected → ' + data.deviceHost + ':' + data.devicePort, 'ok'); })
+      .catch(function(){ setBridgeStatus('Not reachable at ' + bridgeBase(), 'error'); });
+  }
+
+  function describeSent(sent){
+    if(Array.isArray(sent)) return sent.length + ' command' + (sent.length === 1 ? '' : 's') + ' sent';
+    return sent || 'sent';
+  }
+
+  function bridgePost(path, payload){
+    if(!bridgeEnabled.checked) return;
+    fetch(bridgeBase() + path, {
+      method: 'POST',
+      headers: { 'Content-Type': 'application/json' },
+      body: JSON.stringify(payload)
+    }).then(function(r){
+      return r.json().then(function(data){ return { httpOk: r.ok, data: data }; });
+    }).then(function(res){
+      if(res.httpOk && res.data.ok) setBridgeStatus('Sent: ' + describeSent(res.data.sent), 'ok');
+      else setBridgeStatus('Bridge error: ' + (res.data.error || 'unknown'), 'error');
+    }).catch(function(){
+      setBridgeStatus('Not reachable at ' + bridgeBase(), 'error');
+    });
+  }
+
+  bridgeEnabled.addEventListener('change', function(){
+    bridgeUrlInput.disabled = !bridgeEnabled.checked;
+    checkBridge();
+  });
+  bridgeUrlInput.addEventListener('change', checkBridge);
 
   // --- Scent Atmosphere: canvas particle preview -----------------------
   (function(){
