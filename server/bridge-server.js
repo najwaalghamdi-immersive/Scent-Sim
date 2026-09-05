@@ -68,6 +68,20 @@ function createBridgeServer(options) {
   const token = options.token || process.env.BRIDGE_TOKEN || '';
 
   const socket = dgram.createSocket('udp4');
+  // Some units haven't picked up a DHCP lease (e.g. connected directly to a
+  // PC with no DHCP server on either end) and only answer on their default
+  // subnet's broadcast address, e.g. 192.168.1.255 as OLORAMA_HOST. Sending
+  // to a broadcast address requires SO_BROADCAST, which Node doesn't enable
+  // by default — without this, that would fail with EACCES. Harmless to
+  // enable even when the destination is an ordinary unicast address.
+  const socketReady = new Promise((resolve, reject) => {
+    socket.once('error', reject);
+    socket.bind(() => {
+      socket.removeListener('error', reject);
+      socket.setBroadcast(true);
+      resolve();
+    });
+  });
 
   function sendUdp(port, intensity, fanMs) {
     return new Promise((resolve, reject) => {
@@ -78,10 +92,12 @@ function createBridgeServer(options) {
         reject(error);
         return;
       }
-      socket.send(message, devicePort, deviceHost, (error) => {
-        if (error) reject(error);
-        else resolve(message);
-      });
+      socketReady.then(() => {
+        socket.send(message, devicePort, deviceHost, (error) => {
+          if (error) reject(error);
+          else resolve(message);
+        });
+      }, reject);
     });
   }
 

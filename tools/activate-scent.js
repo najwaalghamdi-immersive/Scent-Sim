@@ -17,6 +17,13 @@
 // reference/olorama_c_integration_guide.md) — the user guide PDF itself
 // doesn't print it. Override it with --port / $OLORAMA_PORT if your unit's
 // PacketSender export or Olorama support gives you a different value.
+//
+// If the unit hasn't picked up a DHCP lease (e.g. it's connected directly
+// to your PC with no DHCP server on either end), it falls back to its
+// default subnet and answers on that subnet's broadcast address instead —
+// e.g. --host 192.168.1.255. Give your PC's NIC a static IP on that same
+// subnet (DHCP won't complete over a direct link either) and you don't
+// need the unit's individual address at all.
 
 const dgram = require('dgram');
 const { encodeCommand, PORT_COUNT, INTENSITY_MIN, INTENSITY_MAX, FAN_MS_MIN, FAN_MS_MAX } = require('./protocol');
@@ -75,6 +82,25 @@ Examples:
   node tools/activate-scent.js --scenario volcanic-eruption`);
 }
 
+// Some units haven't picked up a DHCP lease yet (or your PC is talking to
+// one directly over a point-to-point cable with no DHCP server on either
+// end) and only answer on their default subnet's broadcast address, e.g.
+// 192.168.1.255. Sending to a broadcast address requires the SO_BROADCAST
+// socket option, which Node doesn't enable by default — without this,
+// --host 192.168.1.255 fails with EACCES. Harmless to enable even when
+// sending to a normal unicast address.
+function createReadySocket() {
+  return new Promise((resolve, reject) => {
+    const socket = dgram.createSocket('udp4');
+    socket.once('error', reject);
+    socket.bind(() => {
+      socket.removeListener('error', reject);
+      socket.setBroadcast(true);
+      resolve(socket);
+    });
+  });
+}
+
 function sendCommand(socket, { host, port, scentPort, intensity, fanMs }) {
   return new Promise((resolve, reject) => {
     let message;
@@ -103,7 +129,7 @@ async function main() {
     return;
   }
 
-  const socket = dgram.createSocket('udp4');
+  const socket = await createReadySocket();
 
   if (args.scenario) {
     const scenario = SCENARIOS.find((s) => s.id === args.scenario);

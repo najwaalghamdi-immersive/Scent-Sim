@@ -85,6 +85,25 @@ npm run simulate                                                    # terminal 1
 node tools/activate-scent.js 2 --host 127.0.0.1 --port 5010 --intensity 150 --fan-ms 3000   # terminal 2
 ```
 
+**Unit not responding at all, on any IP you try?** If it hasn't picked up a
+DHCP lease — e.g. it's wired directly to a PC with no DHCP server on either
+end, which is also why neither side gets an IP via `ipconfig`/`ifconfig` in
+that setup — it falls back to a default subnet and only answers on that
+subnet's broadcast address (Olorama devices default to UDP port 5010,
+broadcast `192.168.1.255`). Two things are required to reach it that way:
+
+1. Give your PC's NIC a **static** IP on that same subnet (`192.168.1.50` /
+   `255.255.255.0`, no gateway needed) — DHCP won't complete over a direct
+   link either, so "Automatic" will just sit there with no address.
+2. Send to the broadcast address directly — you don't need the unit's
+   individual IP at all:
+   ```
+   node tools/activate-scent.js 1 --host 192.168.1.255
+   ```
+   Sending to a broadcast address needs the `SO_BROADCAST` socket option,
+   which `tools/activate-scent.js` and `server/bridge-server.js` both enable
+   on their sockets for exactly this case.
+
 ## The bridge (real activation from the page)
 
 Browsers can't send UDP, so `index.html`'s toggle instead talks to a small
