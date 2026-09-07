@@ -135,6 +135,15 @@ laptop only you use, but set a token before binding it to your network.
 `OLORAMA_HOST`/`OLORAMA_PORT` (same as the CLI) set which device the bridge
 forwards to; `BRIDGE_PORT` changes which port the bridge itself listens on.
 
+## Unity
+
+`unity/` has a drop-in `OloramaUDPSender.cs` for triggering scents straight
+from a Unity scene, plus an example trigger-volume script and NUnit tests —
+see `unity/README.md`. It fixes a real bug found while integrating: a
+version of this sender that put spaces after the commas (`OUT, 01, ...`)
+built a message the device's parser silently ignored, even though the
+network path was otherwise fine.
+
 ## Tests
 
 ```
