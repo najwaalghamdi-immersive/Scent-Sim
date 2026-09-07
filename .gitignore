@@ -1,0 +1,46 @@
+# ===== Unity =====
+# Regenerated caches/build output — never commit these, they can be
+# gigabytes and cause nothing but merge pain.
+[Ll]ibrary/
+[Tt]emp/
+[Oo]bj/
+[Bb]uild/
+[Bb]uilds/
+[Ll]ogs/
+[Uu]ser[Ss]ettings/
+[Mm]emoryCaptures/
+
+# Visual Studio / Rider / VS Code cache for a Unity project
+.vs/
+.vsconfig
+*.csproj
+*.unityproj
+*.sln
+*.slnx
+*.suo
+*.tmp
+*.user
+*.userprefs
+*.pidb
+*.booproj
+*.svd
+*.pdb
+*.mdb
+*.opendb
+*.VC.db
+.idea/
+*.sln.iml
+
+# Crashlytics generated file
+crashlytics-build.properties
+
+# Packages lock file (usually fine to keep, uncomment to ignore instead)
+# /Packages/packages-lock.json
+
+# ===== Node (this repo's tooling) =====
+node_modules/
+npm-debug.log*
+
+# ===== OS junk =====
+.DS_Store
+Thumbs.db
