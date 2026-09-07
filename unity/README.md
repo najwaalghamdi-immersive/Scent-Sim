@@ -8,28 +8,60 @@ would have silently broken every send (see below).
 ## Setup
 
 Scents are data (`ScentMaker` assets), decoupled from where they're
-triggered from (`ScentTrigger`, or your own code calling `Activate()`
-directly) and from the network config (`OloramaUDPSender`, one per scene).
+triggered from and from the network config (`OloramaUDPSender`, one per
+scene). Three independent ways to fire a scent are provided — collision,
+direct selection, and a gun — and all three end up calling the same
+`ScentMaker.Activate()`, so add whichever ones your MR experience needs.
 
-1. Copy `OloramaUDPSender.cs`, `ScentMaker.cs`, and `ScentTrigger.cs` into
-   your Unity project's `Assets/Scripts/` (or wherever your scripts live).
+1. Copy `OloramaUDPSender.cs`, `ScentMaker.cs`, `ScentSelection.cs`,
+   `ScentMenu.cs`, `ScentTrigger.cs`, and `ScentGun.cs` into your Unity
+   project's `Assets/Scripts/` (or wherever your scripts live).
 2. Add `OloramaUDPSender` to exactly one GameObject in the scene (e.g. an
    empty "ScentController"), and set **Target IP** / **Target Port** in the
-   Inspector. `ScentMaker` finds it automatically via
-   `OloramaUDPSender.Instance` — no need to wire a reference per trigger.
-3. Create a scent asset: **Assets → Create → Scriptable Objects →
+   Inspector. Add `ScentSelection` to the same (or another) GameObject if
+   you want a "currently chosen scent" shared across triggers/guns — see
+   below.
+3. Create a scent asset per scent: **Assets → Create → Scriptable Objects →
    ScentMaker**. Name it after the scent (e.g. `Blood.asset`) and set its
-   **Port** / **Intensity** / **Fan Ms** in the Inspector. Make one per
-   scent you use — they're reusable across as many triggers as you want.
-4. On any trigger volume (a GameObject with a Collider set to **Is
-   Trigger**), add `ScentTrigger`, drag the scent asset from step 3 into
-   its **Scent** field, and set the tag it should respond to.
-5. Either the trigger volume or the object entering it (the player) needs a
-   non-kinematic `Rigidbody`, or `OnTriggerEnter` never fires — a common
-   silent failure that has nothing to do with the networking code.
+   **Port** / **Intensity** / **Fan Ms** in the Inspector. They're
+   reusable across as many triggers/menus/guns as you want.
 
-Need one collision to fire a different scent than another? Just assign a
-different `ScentMaker` asset to each `ScentTrigger` — no code changes.
+### Trigger 1 — collision
+
+Add `ScentTrigger` to a trigger volume (a Collider with **Is Trigger**
+checked), drag a scent asset into its **Scent** field, and set the tag it
+should respond to (defaults to `"Player"`). Either the trigger volume or
+the object entering it needs a non-kinematic `Rigidbody`, or
+`OnTriggerEnter` never fires — a common silent failure that has nothing to
+do with the networking code.
+
+Leave **Scent** empty instead of assigning one, and the trigger fires
+whatever the player currently has selected (see Trigger 2) rather than a
+fixed scent.
+
+### Trigger 2 — chosen from a menu
+
+Add `ScentMenu` to your MR menu/UI GameObject and assign an array of scent
+assets to **Scents**. Wire each menu option's UI Button `OnClick` (or an XR
+interactable's Select event) to `ScentMenu.Choose(index)` — index 0 for the
+first scent, 1 for the second, etc. Choosing an entry calls
+`ScentSelection.Choose()`, which fires it immediately (toggle this off with
+`ScentSelection.activateOnChoose` if you only want selection to *arm* a
+scent, not fire it on the spot) and becomes the scent that any
+empty-**Scent** `ScentTrigger` or `ScentGun` will use next.
+
+### Trigger 3 — a gun
+
+Add `ScentGun` to a gun-like GameObject. Either assign a **Fixed Scent**
+(a gun permanently loaded with one cartridge) or leave it empty to fire
+whatever's currently selected via `ScentSelection`. It raycasts forward
+from its **Muzzle** (or its own transform) up to **Range** and activates
+the scent when it hits something — optionally restrict hits to a
+**Required Hit Tag** so shooting empty scenery doesn't burn a cartridge.
+Call the public `Fire()` method from an XR controller's Activate/Select
+event or an Input Action; `useLegacyFireButton` is on by default so it
+also works with a plain mouse/keyboard click (`Fire1`) for quick testing
+outside VR.
 
 ## The bug this fixes
 
