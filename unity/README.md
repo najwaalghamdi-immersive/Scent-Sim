@@ -79,3 +79,13 @@ These tests haven't been run inside an actual Unity Editor as part of this
 change (no Unity install in this environment) — they're written to the
 same cases already verified in `test/protocol.test.js`, but treat them as
 unverified until you've run them once yourself.
+
+## Pushing Unity project changes to this repo
+
+Use a local git client (`git add`/`commit`/`push` from a checkout on your
+machine), not GitHub's "Upload files" web UI. The web uploader ignores
+`.gitignore`, so it will happily commit Unity's regenerated `Library/`,
+`Logs/`, and `UserSettings/` folders — gigabytes of rebuildable cache that
+bloats the repo for everyone who clones it. This already happened once and
+had to be cleaned up with a history rewrite; the root `.gitignore` only
+protects you if the tool you're using actually reads it.
