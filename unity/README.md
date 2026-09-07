@@ -7,16 +7,29 @@ would have silently broken every send (see below).
 
 ## Setup
 
-1. Copy `OloramaUDPSender.cs` and `GameManager.cs` into your Unity
-   project's `Assets/Scripts/` (or wherever your scripts live).
-2. Add `OloramaUDPSender` to a GameObject (e.g. an empty "ScentController").
-3. Set **Target IP** and **Target Port** in the Inspector.
+Scents are data (`ScentMaker` assets), decoupled from where they're
+triggered from (`ScentTrigger`, or your own code calling `Activate()`
+directly) and from the network config (`OloramaUDPSender`, one per scene).
+
+1. Copy `OloramaUDPSender.cs`, `ScentMaker.cs`, and `ScentTrigger.cs` into
+   your Unity project's `Assets/Scripts/` (or wherever your scripts live).
+2. Add `OloramaUDPSender` to exactly one GameObject in the scene (e.g. an
+   empty "ScentController"), and set **Target IP** / **Target Port** in the
+   Inspector. `ScentMaker` finds it automatically via
+   `OloramaUDPSender.Instance` — no need to wire a reference per trigger.
+3. Create a scent asset: **Assets → Create → Scriptable Objects →
+   ScentMaker**. Name it after the scent (e.g. `Blood.asset`) and set its
+   **Port** / **Intensity** / **Fan Ms** in the Inspector. Make one per
+   scent you use — they're reusable across as many triggers as you want.
 4. On any trigger volume (a GameObject with a Collider set to **Is
-   Trigger**), add `GameManager`, drag the ScentController object into its
-   **Scent Sender** field, and set the port/intensity/fan time you want.
+   Trigger**), add `ScentTrigger`, drag the scent asset from step 3 into
+   its **Scent** field, and set the tag it should respond to.
 5. Either the trigger volume or the object entering it (the player) needs a
    non-kinematic `Rigidbody`, or `OnTriggerEnter` never fires — a common
    silent failure that has nothing to do with the networking code.
+
+Need one collision to fire a different scent than another? Just assign a
+different `ScentMaker` asset to each `ScentTrigger` — no code changes.
 
 ## The bug this fixes
 

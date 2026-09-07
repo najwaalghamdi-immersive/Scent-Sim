@@ -17,9 +17,26 @@ public class OloramaUDPSender : MonoBehaviour
     public string targetIP = "169.254.255.255";
     public int targetPort = 5010;
 
+    /// <summary>
+    /// The scene's sender, so a ScriptableObject (which can't hold a scene
+    /// reference in the Inspector) can reach it — see ScentMaker.Activate().
+    /// Put exactly one OloramaUDPSender in the scene.
+    /// </summary>
+    public static OloramaUDPSender Instance { get; private set; }
+
     const int PortMin = 1, PortMax = 10;
     const int IntensityMin = 100, IntensityMax = 500;
     const int FanMsMin = 1000, FanMsMax = 9000;
+
+    void Awake()
+    {
+        if (Instance != null && Instance != this)
+        {
+            Debug.LogWarning($"[Olorama] a second OloramaUDPSender ({name}) exists; keeping {Instance.name}.");
+            return;
+        }
+        Instance = this;
+    }
 
     /// <summary>
     /// Builds the wire message without sending it, so the exact string can
