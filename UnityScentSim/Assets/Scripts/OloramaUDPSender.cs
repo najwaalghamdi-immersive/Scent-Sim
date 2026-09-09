@@ -68,7 +68,19 @@ public class OloramaUDPSender : MonoBehaviour
             Debug.LogWarning($"[Olorama] fanMs {fanMs} is outside {FanMsMin}-{FanMsMax}; clamped.");
 
         string message = BuildMessage(scentPort, intensity, fanMs);
-        Debug.Log($"[Olorama] Sending UDP to {targetIP}:{targetPort} -> {message}");
+
+        // Trim before parsing: a copy-pasted IP picks up trailing
+        // whitespace/newlines surprisingly often, and IPAddress.Parse
+        // rejects that with the unhelpful "An invalid IP address was
+        // specified" — with no indication of *which* string it choked on.
+        string ip = (targetIP ?? string.Empty).Trim();
+        if (!IPAddress.TryParse(ip, out IPAddress address))
+        {
+            Debug.LogError($"[Olorama] Target IP \"{targetIP}\" is not a valid IP address — check the OloramaUDPSender Inspector field for a stray space, quote mark, or typo.");
+            return;
+        }
+
+        Debug.Log($"[Olorama] Sending UDP to {ip}:{targetPort} -> {message}");
 
         try
         {
@@ -80,7 +92,7 @@ public class OloramaUDPSender : MonoBehaviour
                 // address instead.
                 client.EnableBroadcast = true;
                 byte[] data = Encoding.ASCII.GetBytes(message);
-                client.Send(data, data.Length, new IPEndPoint(IPAddress.Parse(targetIP), targetPort));
+                client.Send(data, data.Length, new IPEndPoint(address, targetPort));
             }
         }
         catch (System.Exception ex)
