@@ -14,8 +14,9 @@ direct selection, and a gun — and all three end up calling the same
 `ScentMaker.Activate()`, so add whichever ones your MR experience needs.
 
 1. Copy `OloramaUDPSender.cs`, `ScentMaker.cs`, `ScentSelection.cs`,
-   `ScentMenu.cs`, `ScentTrigger.cs`, and `ScentGun.cs` into your Unity
-   project's `Assets/Scripts/` (or wherever your scripts live).
+   `ScentMenu.cs`, `ScentSource.cs`, `ScentTrigger.cs`, and `ScentGun.cs`
+   into your Unity project's `Assets/Scripts/` (or wherever your scripts
+   live).
 2. Add `OloramaUDPSender` to exactly one GameObject in the scene (e.g. an
    empty "ScentController"), and set **Target IP** / **Target Port** in the
    Inspector. Add `ScentSelection` to the same (or another) GameObject if
@@ -26,18 +27,25 @@ direct selection, and a gun — and all three end up calling the same
    **Port** / **Intensity** / **Fan Ms** in the Inspector. They're
    reusable across as many triggers/menus/guns as you want.
 
+### Giving an object its own smell
+
+Add `ScentSource` to anything that should smell like something specific —
+a flower, a corpse, a puddle — and drag a scent asset into its **Scent**
+field. Both the collision trigger and the gun check for this on the object
+first, before falling back to anything fixed in their own Inspector, so
+one `ScentSource` is the single place a given object's smell is
+configured, no matter how it gets triggered.
+
 ### Trigger 1 — collision
 
 Add `ScentTrigger` to a trigger volume (a Collider with **Is Trigger**
-checked), drag a scent asset into its **Scent** field, and set the tag it
-should respond to (defaults to `"Player"`). Either the trigger volume or
-the object entering it needs a non-kinematic `Rigidbody`, or
-`OnTriggerEnter` never fires — a common silent failure that has nothing to
-do with the networking code.
-
-Leave **Scent** empty instead of assigning one, and the trigger fires
-whatever the player currently has selected (see Trigger 2) rather than a
-fixed scent.
+checked) and set the tag it should respond to (defaults to `"Player"`).
+Either the trigger volume or the object entering it needs a non-kinematic
+`Rigidbody`, or `OnTriggerEnter` never fires — a common silent failure
+that has nothing to do with the networking code. What actually fires, in
+order: a `ScentSource` on the same GameObject, then this component's own
+**Scent** field, then whatever's currently selected via `ScentSelection`
+(see Trigger 2).
 
 ### Trigger 2 — chosen from a menu
 
@@ -50,18 +58,19 @@ first scent, 1 for the second, etc. Choosing an entry calls
 scent, not fire it on the spot) and becomes the scent that any
 empty-**Scent** `ScentTrigger` or `ScentGun` will use next.
 
-### Trigger 3 — a gun
+### Trigger 3 — a gun that smells whatever it hits
 
-Add `ScentGun` to a gun-like GameObject. Either assign a **Fixed Scent**
-(a gun permanently loaded with one cartridge) or leave it empty to fire
-whatever's currently selected via `ScentSelection`. It raycasts forward
-from its **Muzzle** (or its own transform) up to **Range** and activates
-the scent when it hits something — optionally restrict hits to a
-**Required Hit Tag** so shooting empty scenery doesn't burn a cartridge.
-Call the public `Fire()` method from an XR controller's Activate/Select
-event or an Input Action; `useLegacyFireButton` is on by default so it
-also works with a plain mouse/keyboard click (`Fire1`) for quick testing
-outside VR.
+Add `ScentGun` to a gun-like GameObject. It raycasts forward from its
+**Muzzle** (or its own transform) up to **Range**, and picks the scent to
+fire in this order: a `ScentSource` on whatever it hit (this is what makes
+shooting a flower smell like *that* flower), then this gun's own **Fixed
+Scent** if you set one (a gun permanently loaded with one cartridge
+regardless of target), then whatever's currently selected via
+`ScentSelection`. Optionally set **Required Hit Tag** so shooting empty
+scenery doesn't do anything at all. Call the public `Fire()` method from
+an XR controller's Activate/Select event or an Input Action;
+`useLegacyFireButton` is on by default so it also works with a plain
+mouse/keyboard click (`Fire1`) for quick testing outside VR.
 
 ## The bug this fixes
 
