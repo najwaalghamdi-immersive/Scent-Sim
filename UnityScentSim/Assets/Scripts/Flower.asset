@@ -15,4 +15,4 @@ MonoBehaviour:
   scentName: Flower
   port: 1
   intensity: 100
-  fanMs: 2000
+  fanMs: 1139
