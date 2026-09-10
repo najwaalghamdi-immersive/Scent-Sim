@@ -54,6 +54,7 @@
   <ItemGroup>
     <Compile Include="Assets\Scripts\ScentGun.cs" />
     <Compile Include="Assets\Scripts\ScentMaker.cs" />
+    <Compile Include="Assets\Scripts\ScentSource.cs" />
     <Compile Include="Assets\Scripts\ScentMenu.cs" />
     <Compile Include="Assets\Scripts\ScentSelection.cs" />
     <Compile Include="Assets\Scripts\OloramaUDPSender.cs" />
