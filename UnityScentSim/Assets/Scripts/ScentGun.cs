@@ -1,4 +1,5 @@
 using UnityEngine;
+using UnityEngine.InputSystem;
 
 /// <summary>
 /// A "scent gun": raycasts forward from the muzzle and activates a
@@ -30,11 +31,15 @@ public class ScentGun : MonoBehaviour
     [Header("Legacy input (optional, for quick testing without VR/XR wired up)")]
     [SerializeField] private bool useLegacyFireButton = true;
     [SerializeField] private string fireButton = "Fire1";
+    [SerializeField] private InputActionReference activatAction;
 
     void Update()
     {
         if (useLegacyFireButton && Input.GetButtonDown(fireButton))
             Fire();
+
+        if (activatAction != null && activatAction.action.triggered)
+            Fire();    
     }
 
     /// <summary>Call this from your input/interaction layer to pull the trigger.</summary>
