@@ -49,6 +49,8 @@ public class ScentGun : MonoBehaviour
         if (!Physics.Raycast(origin.position, origin.forward, out RaycastHit hit, range, hitMask))
             return;
 
+        Debug.Log("[ScentGun] HIT: "+ hit.collider.name);    
+
         if (!string.IsNullOrEmpty(requiredHitTag) && !hit.collider.CompareTag(requiredHitTag))
             return;
 
