@@ -85,8 +85,12 @@ regardless of target), then whatever's currently selected via
 `ScentSelection`. Optionally set **Required Hit Tag** so shooting empty
 scenery doesn't do anything at all. Call the public `Fire()` method from
 an XR controller's Activate/Select event or an Input Action;
-`useLegacyFireButton` is on by default so it also works with a plain
-mouse/keyboard click (`Fire1`) for quick testing outside VR.
+`useLegacyFireButton` is on by default so it also works with a quick
+non-VR test click — left mouse button if the project's Active Input
+Handling is the new Input System (XRI projects, this one included, almost
+always are), or the `Fire1` axis if it's the old Input Manager; it
+compiles to whichever one is actually active, so it never throws on the
+wrong backend.
 
 ## Testing with 10 scents quickly
 
@@ -94,14 +98,33 @@ mouse/keyboard click (`Fire1`) for quick testing outside VR.
 into an `Editor/` folder in your project (it must be Editor-only — it uses
 `UnityEditor` APIs and would fail to compile in a build otherwise), then
 run **Scent Sim → Create Scent Test Objects** from the menu bar. It finds
-every `ScentMaker` asset in the project (up to 10, ordered by port),
-spawns one colored cube per scent a few meters in front of the origin, and
-adds `ScentSource` + `ScentTrigger` to each, already pointing at that
-scent — nothing left to drag into the Inspector. Enter Play mode and walk
-the Player (tagged `"Player"`, with a non-kinematic `Rigidbody`) into a
-cube; the Console should show `[Olorama] Sending UDP to ...` and, if the
-physical unit is reachable, that port should fire. Each run creates a
-fresh `ScentTestObjects` GameObject — delete the old one first (or create
+every `ScentMaker` asset in the project (up to 10, ordered by port) and
+spawns, under a parent `ScentTestObjects`:
+
+- One colored cube per scent, a few meters in front of the origin, each
+  with `ScentSource` + `ScentTrigger` (collision) + `XRSimpleInteractable`
+  + `ScentInteractable` (reach-and-select) already wired to that scent.
+- One `TestGun`, a few meters back from the cubes facing them, with
+  `ScentGun` already pointed at a child `Muzzle`.
+
+So all three paths are testable on the same objects, immediately, without
+touching the Inspector. Enter Play mode:
+
+- **Collision**: walk the Player (tagged `"Player"`, with a non-kinematic
+  `Rigidbody`) into a cube.
+- **Select**: point a controller ray and pull the trigger, poke it, or
+  (hand tracking) pinch it. If this doesn't register but collision does,
+  check the XR Ray Interactor's **Raycast Trigger Interaction** setting —
+  it defaults to *Ignore*, which skips our cubes' trigger colliders (set
+  that way so collision works); set it to *Collide* on that interactor.
+- **Gun**: face `TestGun` at a cube and left-click (or `Fire1`, per
+  whichever input backend is active) — or call `ScentGun.Fire()` from
+  your actual controller input once you wire that up.
+
+Any of the three should print `[Olorama] Sending UDP to ...` in the
+Console, and — if the physical unit is reachable — fire that port. Each
+run creates a fresh `ScentTestObjects` GameObject — delete the old one
+first (or create
 more `ScentMaker` assets via **Assets → Create → Scriptable Objects →
 ScentMaker** and re-run) rather than running it twice and ending up with
 duplicates.

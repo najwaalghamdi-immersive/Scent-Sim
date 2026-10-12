@@ -1,15 +1,19 @@
 using System.Linq;
 using UnityEditor;
 using UnityEngine;
+using UnityEngine.XR.Interaction.Toolkit.Interactables;
 
 /// <summary>
 /// Editor-only helper for testing: finds every ScentMaker asset in the
 /// project and spawns one cube per scent (up to 10), each already wired
-/// with a ScentSource + ScentTrigger pointing at that scent. Enter Play
-/// mode and walk the Player into a cube to fire its scent — no manual
-/// Inspector wiring needed. Must live under an "Editor" folder (or an
-/// asmdef with includePlatforms: ["Editor"]) so it's excluded from
-/// player builds.
+/// with a ScentSource + ScentTrigger (collision) + XRSimpleInteractable +
+/// ScentInteractable (reach-and-select, works for controller ray, poke,
+/// or hand-tracking pinch) pointing at that scent. Also spawns one
+/// TestGun with a ScentGun aimed at the row. Enter Play mode, walk the
+/// Player into a cube, reach out and select one, or fire the gun at one —
+/// no manual Inspector wiring needed for any of the three. Must live
+/// under an "Editor" folder (or an asmdef with
+/// includePlatforms: ["Editor"]) so it's excluded from player builds.
 /// </summary>
 public static class CreateScentTestObjects
 {
@@ -54,6 +58,11 @@ public static class CreateScentTestObjects
             renderer.sharedMaterial = material;
 
             Collider col = cube.GetComponent<Collider>();
+            // isTrigger so ScentTrigger's OnTriggerEnter fires on walk-in.
+            // XRSimpleInteractable works fine with a trigger collider for
+            // Poke/Direct interactors; a Ray interactor needs its own
+            // "Raycast Trigger Interaction" set to Collide (not the default
+            // Ignore) to register hits on it — see the README note.
             col.isTrigger = true;
 
             Rigidbody rb = cube.AddComponent<Rigidbody>();
@@ -64,9 +73,27 @@ public static class CreateScentTestObjects
             source.scent = scent;
 
             cube.AddComponent<ScentTrigger>();
+            cube.AddComponent<XRSimpleInteractable>();
+            cube.AddComponent<ScentInteractable>();
         }
 
+        GameObject gun = new GameObject("TestGun");
+        Undo.RegisterCreatedObjectUndo(gun, "Create Scent Test Objects");
+        gun.transform.SetParent(parent.transform);
+        gun.transform.position = new Vector3(0f, 0.75f, -1f);
+
+        GameObject muzzle = new GameObject("Muzzle");
+        Undo.RegisterCreatedObjectUndo(muzzle, "Create Scent Test Objects");
+        muzzle.transform.SetParent(gun.transform);
+        muzzle.transform.localPosition = Vector3.zero;
+        muzzle.transform.localRotation = Quaternion.identity;
+
+        ScentGun scentGun = gun.AddComponent<ScentGun>();
+        SerializedObject gunSerialized = new SerializedObject(scentGun);
+        gunSerialized.FindProperty("muzzle").objectReferenceValue = muzzle.transform;
+        gunSerialized.ApplyModifiedProperties();
+
         Selection.activeGameObject = parent;
-        Debug.Log($"[Olorama] Created {count} scent test cube(s) under \"ScentTestObjects\", 1.5m apart starting ~2m in front of the origin. Enter Play mode and walk the Player (tagged \"Player\", with a non-kinematic Rigidbody) into each to fire ScentTrigger -> ScentSource -> UDP.");
+        Debug.Log($"[Olorama] Created {count} scent test cube(s) plus \"TestGun\" under \"ScentTestObjects\", 1.5m apart ~2m in front of the origin, gun at ~1m behind that facing +Z. Enter Play mode: walk the Player (tagged \"Player\", non-kinematic Rigidbody) into a cube for ScentTrigger, reach out and select one for ScentInteractable (controller ray/poke/hand pinch), or left-click (new Input System) / Fire1 (old Input Manager) with TestGun facing a cube for ScentGun. All three read the same ScentSource -> ScentMaker -> OloramaUDPSender -> UDP.");
     }
 }
