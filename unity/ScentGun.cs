@@ -1,4 +1,7 @@
 using UnityEngine;
+#if ENABLE_INPUT_SYSTEM
+using UnityEngine.InputSystem;
+#endif
 
 /// <summary>
 /// A "scent gun": raycasts forward from the muzzle and activates a
@@ -13,8 +16,9 @@ using UnityEngine;
 ///
 /// Wire Fire() to an XR controller's Activate/Select UnityEvent, an Input
 /// Action's performed callback, or leave Use Legacy Fire Button on for a
-/// quick non-VR test (defaults to the "Fire1" axis, i.e. left ctrl/mouse
-/// button in Unity's default Input Manager).
+/// quick non-VR test — left mouse click if the project's Active Input
+/// Handling is the new Input System (the common case for an XRI project
+/// like this one), or the "Fire1" axis if it's the old Input Manager.
 /// </summary>
 public class ScentGun : MonoBehaviour
 {
@@ -29,12 +33,26 @@ public class ScentGun : MonoBehaviour
 
     [Header("Legacy input (optional, for quick testing without VR/XR wired up)")]
     [SerializeField] private bool useLegacyFireButton = true;
+#if ENABLE_LEGACY_INPUT_MANAGER
     [SerializeField] private string fireButton = "Fire1";
+#endif
 
     void Update()
     {
-        if (useLegacyFireButton && Input.GetButtonDown(fireButton))
+        if (!useLegacyFireButton) return;
+
+        // Which API compiles here depends on the project's Active Input
+        // Handling setting (Edit > Project Settings > Player) — calling the
+        // other one throws InvalidOperationException at runtime instead of
+        // a compile error, so this has to branch on it rather than just
+        // always using UnityEngine.Input.
+#if ENABLE_LEGACY_INPUT_MANAGER
+        if (Input.GetButtonDown(fireButton))
             Fire();
+#elif ENABLE_INPUT_SYSTEM
+        if (Mouse.current != null && Mouse.current.leftButton.wasPressedThisFrame)
+            Fire();
+#endif
     }
 
     /// <summary>Call this from your input/interaction layer to pull the trigger.</summary>
