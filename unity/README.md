@@ -9,14 +9,18 @@ would have silently broken every send (see below).
 
 Scents are data (`ScentMaker` assets), decoupled from where they're
 triggered from and from the network config (`OloramaUDPSender`, one per
-scene). Three independent ways to fire a scent are provided — collision,
-direct selection, and a gun — and all three end up calling the same
-`ScentMaker.Activate()`, so add whichever ones your MR experience needs.
+scene). Four independent ways to fire a scent are provided — collision,
+being directly selected in MR, a menu, and a gun — and all of them end up
+calling the same `ScentMaker.Activate()`, so add whichever ones your MR
+experience needs to the same object; they all check the same
+`ScentSource` first.
 
 1. Copy `OloramaUDPSender.cs`, `ScentMaker.cs`, `ScentSelection.cs`,
-   `ScentMenu.cs`, `ScentSource.cs`, `ScentTrigger.cs`, and `ScentGun.cs`
-   into your Unity project's `Assets/Scripts/` (or wherever your scripts
-   live).
+   `ScentMenu.cs`, `ScentSource.cs`, `ScentTrigger.cs`, `ScentGun.cs`, and
+   `ScentInteractable.cs` into your Unity project's `Assets/Scripts/` (or
+   wherever your scripts live). `ScentInteractable.cs` needs the XR
+   Interaction Toolkit package (`com.unity.xr.interaction.toolkit`) —
+   already in this project.
 2. Add `OloramaUDPSender` to exactly one GameObject in the scene (e.g. an
    empty "ScentController"), and set **Target IP** / **Target Port** in the
    Inspector. Add `ScentSelection` to the same (or another) GameObject if
@@ -58,7 +62,19 @@ first scent, 1 for the second, etc. Choosing an entry calls
 scent, not fire it on the spot) and becomes the scent that any
 empty-**Scent** `ScentTrigger` or `ScentGun` will use next.
 
-### Trigger 3 — a gun that smells whatever it hits
+### Trigger 3 — reached out and selected directly in MR
+
+Add an `XRSimpleInteractable` (XR Interaction Toolkit) and `ScentInteractable`
+to the object itself — a flower the player reaches out and touches/grabs.
+This is input-method-agnostic by design: XR Interaction Toolkit raises the
+same `selectEntered` event whether the player used a controller ray +
+trigger pull, a poke, or a hand-tracking pinch (this project already has
+XRI's Hands Interaction Demo sample, so hand tracking works out of the
+box), so one component covers all of them — no separate code path per
+input device. Same scent-resolution order as the others: `ScentSource` on
+the object, then this component's own **Scent**, then `ScentSelection`.
+
+### Trigger 4 — a gun that smells whatever it hits
 
 Add `ScentGun` to a gun-like GameObject. It raycasts forward from its
 **Muzzle** (or its own transform) up to **Range**, and picks the scent to
