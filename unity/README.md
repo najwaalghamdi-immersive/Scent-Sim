@@ -88,6 +88,24 @@ an XR controller's Activate/Select event or an Input Action;
 `useLegacyFireButton` is on by default so it also works with a plain
 mouse/keyboard click (`Fire1`) for quick testing outside VR.
 
+## Testing with 10 scents quickly
+
+`Editor/CreateScentTestObjects.cs` saves wiring 10 objects by hand: copy it
+into an `Editor/` folder in your project (it must be Editor-only — it uses
+`UnityEditor` APIs and would fail to compile in a build otherwise), then
+run **Scent Sim → Create Scent Test Objects** from the menu bar. It finds
+every `ScentMaker` asset in the project (up to 10, ordered by port),
+spawns one colored cube per scent a few meters in front of the origin, and
+adds `ScentSource` + `ScentTrigger` to each, already pointing at that
+scent — nothing left to drag into the Inspector. Enter Play mode and walk
+the Player (tagged `"Player"`, with a non-kinematic `Rigidbody`) into a
+cube; the Console should show `[Olorama] Sending UDP to ...` and, if the
+physical unit is reachable, that port should fire. Each run creates a
+fresh `ScentTestObjects` GameObject — delete the old one first (or create
+more `ScentMaker` assets via **Assets → Create → Scriptable Objects →
+ScentMaker** and re-run) rather than running it twice and ending up with
+duplicates.
+
 ## The bug this fixes
 
 The original sample built its message with **spaces after the commas**:
