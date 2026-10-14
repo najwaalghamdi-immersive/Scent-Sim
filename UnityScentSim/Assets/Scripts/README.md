@@ -26,6 +26,32 @@ experience needs to the same object; they all check the same
    Inspector. Add `ScentSelection` to the same (or another) GameObject if
    you want a "currently chosen scent" shared across triggers/guns — see
    below.
+
+### Reaching the device without fighting the network every time
+
+This project's single biggest source of "it sent but nothing happened" has
+been a Target IP that's right for one network and wrong for the next (a
+cable swap, a new DHCP lease, a different Wi-Fi). `OloramaUDPSender` now
+hedges against that automatically:
+
+- **Auto Discover Broadcast** (on by default) computes the directed
+  broadcast address (e.g. `192.168.1.255`) for *every* active network
+  interface on the machine at send time, and sends to all of them in
+  addition to **Target IP** — so it doesn't matter which adapter actually
+  has the device's subnet, or whether that changes between sessions.
+  Switch it off if you want strict manual control over where commands go.
+- **Send Repeat Count** (default 2) sends each command that many times
+  back to back. UDP has no delivery guarantee and can silently drop a
+  packet with no error on either end — the exact failure mode this
+  project hit earlier — so a cheap repeat catches that without the device
+  noticing (an extra fan pulse is harmless).
+
+Both mean a single `SendScentMessage()` call can fire several actual UDP
+packets across several addresses — intentional, and the tradeoff for not
+having to diagnose the network by hand again. On Android/Quest builds,
+reading network interfaces needs the `ACCESS_NETWORK_STATE` permission,
+which Unity's Android template normally includes by default — check
+Player Settings if auto-discovery silently finds nothing on-device.
 3. Create a scent asset per scent: **Assets → Create → Scriptable Objects →
    ScentMaker**. Name it after the scent (e.g. `Blood.asset`) and set its
    **Port** / **Intensity** / **Fan Ms** in the Inspector. They're
@@ -128,6 +154,28 @@ first (or create
 more `ScentMaker` assets via **Assets → Create → Scriptable Objects →
 ScentMaker** and re-run) rather than running it twice and ending up with
 duplicates.
+
+## Catching setup mistakes before you hit Play
+
+`Editor/ValidateScentScene.cs` (same `Editor/` folder as the test-object
+generator) adds **Scent Sim → Validate Scene**. It scans the open scene
+and the project's `ScentMaker` assets and flags the mistakes that are
+otherwise only found by misreading a Console log after the fact — which
+is exactly how the duplicate-`OloramaUDPSender` bug on this project got
+found:
+
+- Zero or more than one `OloramaUDPSender` / `ScentSelection` in the scene.
+- Two `ScentMaker` assets assigned to the same port (only one cartridge
+  physically lives there).
+- A `ScentTrigger`, `ScentGun`, or `ScentInteractable` with no
+  `ScentSource`, no fixed scent of its own, and no `ScentSelection` to
+  fall back to — it would silently warn and do nothing when triggered.
+- A `ScentTrigger`/`ScentInteractable` missing a `Collider`, or one that
+  isn't set to **Is Trigger** — `OnTriggerEnter` never fires either way.
+- An empty `ScentMenu.Scents` list.
+
+It only reports issues (never changes anything), so it's safe to run any
+time — worth doing right before a build, or after any manual scene edit.
 
 ## The bug this fixes
 

@@ -1,5 +1,7 @@
 using UnityEngine;
+using System.Collections.Generic;
 using System.Net;
+using System.Net.NetworkInformation;
 using System.Net.Sockets;
 using System.Text;
 
@@ -13,9 +15,15 @@ using System.Text;
 public class OloramaUDPSender : MonoBehaviour
 {
     [Header("Olorama UDP Settings")]
-    [Tooltip("Device IP, or a broadcast address (x.x.x.255) if the unit hasn't picked up a normal DHCP lease and is only reachable via link-local broadcast.")]
+    [Tooltip("Device IP, or a broadcast address (x.x.x.255) if the unit hasn't picked up a normal DHCP lease and is only reachable via link-local broadcast. Always tried, even when Auto Discover Broadcast is on.")]
     public string targetIP = "169.254.255.255";
     public int targetPort = 5010;
+
+    [Tooltip("Also broadcast to every active network interface's own subnet automatically (computed from this machine's live IP/subnet mask each send), so a cable swap, a new DHCP lease, or a different Wi-Fi network doesn't need a manual Target IP change. This is the single biggest source of \"sent but nothing happened\" this project has hit, so it's on by default.")]
+    public bool autoDiscoverBroadcast = true;
+
+    [Tooltip("Send each command this many times, back to back. UDP can silently drop a packet with no error on either end, which has happened on this project before — a cheap retry catches that without the device noticing (extra fan pulses are harmless).")]
+    [Range(1, 5)] public int sendRepeatCount = 2;
 
     /// <summary>
     /// The scene's sender, so a ScriptableObject (which can't hold a scene
@@ -69,35 +77,100 @@ public class OloramaUDPSender : MonoBehaviour
 
         string message = BuildMessage(scentPort, intensity, fanMs);
 
+        List<IPAddress> targets = new List<IPAddress>();
+
         // Trim before parsing: a copy-pasted IP picks up trailing
         // whitespace/newlines surprisingly often, and IPAddress.Parse
         // rejects that with the unhelpful "An invalid IP address was
         // specified" — with no indication of *which* string it choked on.
         string ip = (targetIP ?? string.Empty).Trim();
-        if (!IPAddress.TryParse(ip, out IPAddress address))
+        if (IPAddress.TryParse(ip, out IPAddress manualAddress))
         {
-            Debug.LogError($"[Olorama] Target IP \"{targetIP}\" is not a valid IP address — check the OloramaUDPSender Inspector field for a stray space, quote mark, or typo.");
+            targets.Add(manualAddress);
+        }
+        else if (!string.IsNullOrEmpty(ip))
+        {
+            Debug.LogWarning($"[Olorama] Target IP \"{targetIP}\" is not a valid IP address (stray space/quote/typo?) — skipping it." +
+                (autoDiscoverBroadcast ? " Auto-discovered broadcast addresses will still be tried." : " Set a valid Target IP or enable Auto Discover Broadcast."));
+        }
+
+        if (autoDiscoverBroadcast)
+        {
+            foreach (IPAddress discovered in DiscoverLocalBroadcastAddresses())
+            {
+                if (!targets.Contains(discovered))
+                    targets.Add(discovered);
+            }
+        }
+
+        if (targets.Count == 0)
+        {
+            Debug.LogError("[Olorama] No valid target address to send to — set a valid Target IP or enable Auto Discover Broadcast.");
             return;
         }
 
-        Debug.Log($"[Olorama] Sending UDP to {ip}:{targetPort} -> {message}");
+        Debug.Log($"[Olorama] Sending UDP x{sendRepeatCount} to [{string.Join(", ", targets)}]:{targetPort} -> {message}");
 
-        try
+        byte[] data = Encoding.ASCII.GetBytes(message);
+        foreach (IPAddress address in targets)
         {
-            using (UdpClient client = new UdpClient())
+            for (int attempt = 0; attempt < sendRepeatCount; attempt++)
             {
-                // Required to send to a broadcast address (e.g. *.255) —
-                // without this, Send() throws a SocketException on most
-                // platforms. Harmless when targetIP is a normal unicast
-                // address instead.
-                client.EnableBroadcast = true;
-                byte[] data = Encoding.ASCII.GetBytes(message);
-                client.Send(data, data.Length, new IPEndPoint(address, targetPort));
+                try
+                {
+                    using (UdpClient client = new UdpClient())
+                    {
+                        // Required to send to a broadcast address (e.g.
+                        // *.255) — without this, Send() throws a
+                        // SocketException on most platforms. Harmless when
+                        // address is a normal unicast address instead.
+                        client.EnableBroadcast = true;
+                        client.Send(data, data.Length, new IPEndPoint(address, targetPort));
+                    }
+                }
+                catch (System.Exception ex)
+                {
+                    Debug.LogError($"[Olorama] UDP send to {address} failed: {ex.Message}");
+                }
             }
         }
-        catch (System.Exception ex)
+    }
+
+    /// <summary>
+    /// Computes the directed broadcast address (e.g. 192.168.1.255) for
+    /// every active, non-loopback IPv4 network interface on this machine —
+    /// so sending reaches the device's actual subnet regardless of which
+    /// adapter it's physically on, without needing to know that in advance.
+    /// </summary>
+    static IEnumerable<IPAddress> DiscoverLocalBroadcastAddresses()
+    {
+        foreach (NetworkInterface nic in NetworkInterface.GetAllNetworkInterfaces())
         {
-            Debug.LogError($"[Olorama] UDP send failed: {ex.Message}");
+            if (nic.OperationalStatus != OperationalStatus.Up) continue;
+            if (nic.NetworkInterfaceType == NetworkInterfaceType.Loopback) continue;
+
+            foreach (UnicastIPAddressInformation addr in nic.GetIPProperties().UnicastAddresses)
+            {
+                if (addr.Address.AddressFamily != AddressFamily.InterNetwork) continue;
+                if (addr.IPv4Mask == null) continue;
+
+                IPAddress broadcast = ComputeBroadcastAddress(addr.Address, addr.IPv4Mask);
+                if (broadcast != null)
+                    yield return broadcast;
+            }
         }
+    }
+
+    static IPAddress ComputeBroadcastAddress(IPAddress address, IPAddress mask)
+    {
+        byte[] ipBytes = address.GetAddressBytes();
+        byte[] maskBytes = mask.GetAddressBytes();
+        if (ipBytes.Length != maskBytes.Length) return null;
+
+        byte[] broadcastBytes = new byte[ipBytes.Length];
+        for (int i = 0; i < ipBytes.Length; i++)
+            broadcastBytes[i] = (byte)(ipBytes[i] | (byte)~maskBytes[i]);
+
+        return new IPAddress(broadcastBytes);
     }
 }
